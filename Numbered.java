@@ -1,12 +1,8 @@
 /**
  * Represents a deterministic numbered automaton (DNA).
  */
-public class Numbered {
+class Numbered {
     private Set<State> states;
-    private Set<Symbol> alphabet;
-    private Map<Transition, State> transitionFunc;
-    private Set<State> finalStates;
-    private Map<Transition, int> numbering;
 
     /**
      * Determinizes Buchi automaton according to algorithm shown in class.

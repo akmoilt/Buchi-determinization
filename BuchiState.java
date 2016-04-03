@@ -1,0 +1,14 @@
+import java.util.*;
+
+class BuchiState extends State {
+    private final boolean isFinal;
+    private Map<Character, State> transitions;
+
+    public BuchiState(String id, boolean isInitial, boolean isFinal) {
+        super(id, isInitial);
+        this.isFinal = isFinal;
+        transitions = new HashMap<>();
+    }
+
+    // TODO add hashcode and equals
+}
