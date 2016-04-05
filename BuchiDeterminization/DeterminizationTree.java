@@ -11,6 +11,7 @@ public class DeterminizationTree {
 	private Buchi buchi;
 	private List<TreeNode> nodelist;
 	private int number;
+	private Map<BuchiState, Integer> lastUpdated;
 	//TODO add other relevant fields
 	
 	/**
@@ -19,8 +20,10 @@ public class DeterminizationTree {
 	 */
 	public DeterminizationTree(Buchi buchi){
 		this.nodelist = new LinkedHashedList<TreeNode>();
+		this.lastUpdated = new HashMap<BuchiState, Integer>();
 		Set<BuchiState> initialStates = new HashedSet<BuchiState>();
 		for(BuchiState s : buchi.states){
+			lastUpdated.put(s, 0);
 			if(s.isInitial){
 				initialStates.add(s)
 			}
@@ -35,9 +38,8 @@ public class DeterminizationTree {
 	 */
 	public int doStep(char s){
 		// if we killed all paths, return 0 (lowest false)
-		if(nodelist.isEmpty() || doRecursiveStep(s, nodelist.get(0)) == false){
-			return 0;
-		}
+		if(nodelist.isEmpty()){ return 0; }
+		doRecursiveStep(s, nodelist.get(0));
 		return this.number;
 	}
 	//implementation of doStep:
