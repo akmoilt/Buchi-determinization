@@ -8,6 +8,7 @@ public class DeterminizationTree {
 	
 	private Buchi buchi;
 	private List<TreeNode> nodelist;
+	private int number;
 	//TODO add other relevant fields
 	
 	/**
@@ -15,7 +16,14 @@ public class DeterminizationTree {
 	 * @param buchi - the NBA to be determinized
 	 */
 	public DeterminizationTree(Buchi buchi){
-		//TODO
+		this.nodelist = new LinkedHashedList<TreeNode>();
+		Set<BuchiState> initialStates = new HashedSet<BuchiState>();
+		for(BuchiState s : buchi.states){
+			if(s.isInitial){
+				initialStates.add(s)
+			}
+		}
+		nodelist.add(new TreeNode(initialStates, null))
 	}
 	
 	/**
@@ -48,7 +56,6 @@ public class DeterminizationTree {
 		public Set<BuchiState> states; //represents states of current node
 		public List<TreeNode> children;
 		public TreeNode parent;
-		public int num;
 		
 		public TreeNode(Set<BuchiState> states, TreeNode parent){
 			this.states = states;
