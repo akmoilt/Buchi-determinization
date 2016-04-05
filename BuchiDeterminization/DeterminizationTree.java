@@ -1,3 +1,5 @@
+import java.util.List;
+
 
 public class DeterminizationTree {
 /** 
@@ -32,6 +34,14 @@ public class DeterminizationTree {
 	 * @return number for numbered automata
 	 */
 	public int doStep(char s){
+		// if we killed all paths, return 0 (lowest false)
+		if(nodelist.isEmpty() || doRecursiveStep(s, nodelist.get(0)) == false){
+			return 0;
+		}
+		return this.number;
+	}
+	//implementation of doStep:
+	private boolean doRecursiveStep(char s, TreeNode t){
 		//TODO
 	}
 	
