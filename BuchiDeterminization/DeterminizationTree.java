@@ -44,6 +44,19 @@ public class DeterminizationTree {
 	}
 	//implementation of doStep:
 	private boolean doRecursiveStep(char s, TreeNode t){
+		//do recursivly on children:
+		if(!t.children.isEmpty()){
+			ListIterator<TreeNode> iter = t.children.listIterator();
+			while(iter.hasNext()){
+				if(doRecursiveStep(s, iter.next()) == false){
+					iter.remove();
+				}
+			}
+		}
+		//do transition function on states
+		//take all states that weren't already taken
+		//split the accepting ones to new node
+		//delete what is neccesary
 		//TODO
 	}
 	
