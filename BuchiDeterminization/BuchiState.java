@@ -2,7 +2,7 @@ import java.util.*;
 
 class BuchiState extends State {
     public final boolean isFinal;
-    private Map<Character, State> transitions;
+    public final Map<Character, State> transitions;
 
     public BuchiState(String id, boolean isInitial, boolean isFinal) {
         super(id, isInitial);

@@ -12,6 +12,7 @@ public class DeterminizationTree {
 	private List<TreeNode> nodelist;
 	private int number;
 	private Map<BuchiState, Integer> lastUpdated;
+	private int currentIteration;
 	//TODO add other relevant fields
 	
 	/**
@@ -19,6 +20,7 @@ public class DeterminizationTree {
 	 * @param buchi - the NBA to be determinized
 	 */
 	public DeterminizationTree(Buchi buchi){
+		this.currentIteration = 0;
 		this.nodelist = new LinkedHashedList<TreeNode>();
 		this.lastUpdated = new HashMap<BuchiState, Integer>();
 		Set<BuchiState> initialStates = new HashedSet<BuchiState>();
@@ -38,6 +40,7 @@ public class DeterminizationTree {
 	 */
 	public int doStep(char s){
 		// if we killed all paths, return 0 (lowest false)
+		this.currentIteration++;
 		if(nodelist.isEmpty()){ return 0; }
 		doRecursiveStep(s, nodelist.get(0));
 		return this.number;
@@ -53,18 +56,39 @@ public class DeterminizationTree {
 				}
 			}
 		}
-		//do transition function on states
-		//take all states that weren't already taken
-		//split the accepting ones to new node
-		//delete what is neccesary
-		//TODO
+		Set<BuchiState> accStates = new LinkedHashedSet<BuchiState>();
+		Set<BuchiState> otherStates = new LoinkedHashedSet<BuchiState>();
+		for(BuchiState currState : t.children) {
+			for(BuchiState state : currState.transitions.get(s)){
+				if(lastUpdated.get(state) < this.currentIteration){
+					lastUpdated.put(state, this.currentIteration);
+					if(state.isFinal){
+						accStates.add(state);
+					} else {
+						otherStates.add(state);
+					}
+				}
+			}
+		}
+		if(otherStates.isEmpty()){
+			if(accStates.isEmpty() && t.children.isEmpty()){
+				return false; //kill this node
+			} else {
+				// TODO reached accepting state
+			}
+		} else {
+			t.states = otherStates;
+			if(!accStates.isEmpty()){
+				// TODO add child node of accepting states
+			}
+		}
 	}
 	
 	/**
 	 * Returns the array representing the current state
 	 * @return Array representing tree shape
 	 */
-	public int[] getTreeStateArray(){
+	public int[] getTreeArray(){
 		//TODO
 	}
 	
