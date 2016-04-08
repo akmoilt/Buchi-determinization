@@ -1,3 +1,5 @@
+import java.util.*;
+
 /**
  * Represents a deterministic numbered automaton (DNA).
  */
@@ -17,5 +19,6 @@ class Numbered {
      */
     public String toString() {
         // TODO
+        return "";
     }
 }

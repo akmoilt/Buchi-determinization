@@ -1,13 +1,12 @@
 import java.util.*;
 
 class BuchiState extends State {
-    private final boolean isFinal;
-    private Map<Character, State> transitions;
+    final boolean isFinal;
+    Map<Character, State> transitions = new HashMap<>(); // TODO changed this to map to id instead of the whole state
 
     public BuchiState(String id, boolean isInitial, boolean isFinal) {
         super(id, isInitial);
         this.isFinal = isFinal;
-        transitions = new HashMap<>();
     }
 
     // TODO add hashcode and equals
