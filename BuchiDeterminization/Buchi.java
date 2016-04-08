@@ -6,14 +6,14 @@ import java.util.regex.*;
  * It includes a method to construct an automaton from a graphviz graph.
  */
 class Buchi {
-    private Map<String, BuchiState> states = new HashMap<>(); // This is a map because set does not have a get method
+    Map<String, BuchiState> states = new HashMap<>(); // This is a map because set does not have a get method
 
     /**
      * Interprets a graphviz graph into an automaton.
      */
     public Buchi(String graphviz) {
         Pattern statePattern = Pattern.compile("^(?<id>\\w+)\\s\\[label=\"(?<starting>\\*?)(?<labelid>)(?<final>\\$?)\"\\]$");
-        Pattern transitionPattern = Pattern.compile("^\t(?<startStateID>\\w+)\\s->\\s(?<nextStateID>\\w+)\\s\\[label=(?<character>\\w)\\]$");
+        Pattern transitionPattern = Pattern.compile("^\t(?<startID>\\w+)\\s->\\s(?<nextID>\\w+)\\s\\[label=(?<character>\\w)\\]$");
         
         Scanner scanner  = new Scanner(graphviz);
         while (scanner.hasNextLine()) {
@@ -26,8 +26,15 @@ class Buchi {
             }
             Matcher transitionMatcher = transitionPattern.matcher(line);
             if (transitionMatcher.matches()) {
-                BuchiState state = states.get(transitionMatcher.group("startStateID"));
-                state.transitions.put(transitionMatcher.group("character").charAt(0), states.get(transitionMatcher.group("nextStateID")));
+                BuchiState state = states.get(transitionMatcher.group("startID"));
+                Character nextChar = transitionMatcher.group("character").charAt(0);
+                if (state.transitions.containsKey(nextChar)) {
+                    state.transitions.get(nextChar).add(transitionMatcher.group("nextID"));
+                }
+                else {
+                    // convert a single element to an array as ugly hack to initialize set with value
+                    state.transitions.put(nextChar, new HashSet<String>(Arrays.asList(transitionMatcher.group("nextID"))));
+                }
                 continue;
             }
             else {

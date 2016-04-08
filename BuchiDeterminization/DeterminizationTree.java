@@ -1,5 +1,4 @@
-import java.util.List;
-
+import java.util.*;
 
 public class DeterminizationTree {
 /** 
@@ -11,7 +10,7 @@ public class DeterminizationTree {
 	private Buchi buchi;
 	private List<TreeNode> nodelist;
 	private int number;
-	private Map<BuchiState, Integer> lastUpdated;
+	private Map<BuchiState, Integer> lastUpdated; // TODO can this map ids instead of states?
 	private int currentIteration;
 	//TODO add other relevant fields
 	
@@ -21,16 +20,17 @@ public class DeterminizationTree {
 	 */
 	public DeterminizationTree(Buchi buchi){
 		this.currentIteration = 0;
-		this.nodelist = new LinkedHashedList<TreeNode>();
+		this.nodelist = new LinkedHashList<TreeNode>();
 		this.lastUpdated = new HashMap<BuchiState, Integer>();
-		Set<BuchiState> initialStates = new HashedSet<BuchiState>();
-		for(BuchiState s : buchi.states){
+		Set<BuchiState> initialStates = new HashSet<BuchiState>();
+		for(Map.Entry<String, BuchiState> stateEntry : buchi.states.entrySet()) {
+            BuchiState s = stateEntry.getValue();
 			lastUpdated.put(s, 0);
 			if(s.isInitial){
-				initialStates.add(s)
+				initialStates.add(s);
 			}
 		}
-		nodelist.add(new TreeNode(initialStates, null))
+		nodelist.add(new TreeNode(initialStates, null));
 	}
 	
 	/**
@@ -56,10 +56,11 @@ public class DeterminizationTree {
 				}
 			}
 		}
-		Set<BuchiState> accStates = new LinkedHashedSet<BuchiState>();
-		Set<BuchiState> otherStates = new LoinkedHashedSet<BuchiState>();
+		Set<BuchiState> accStates = new LinkedHashSet<BuchiState>();
+		Set<BuchiState> otherStates = new LinkedHashSet<BuchiState>();
 		for(BuchiState currState : t.children) {
-			for(BuchiState state : currState.transitions.get(s)){
+			for(String id : currState.transitions.get(s)){
+                BuchiState state = buchi.states.get(id);
 				if(lastUpdated.get(state) < this.currentIteration){
 					lastUpdated.put(state, this.currentIteration);
 					if(state.isFinal){
