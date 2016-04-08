@@ -9,7 +9,7 @@ class Numbered {
     /**
      * Determinizes Buchi automaton according to algorithm shown in class.
      */
-    public Numbered(Buchi buchi) {
+    public Numbered(DeterminizationTree t) {
         // TODO
     }
 
