@@ -58,19 +58,22 @@ public class DeterminizationTree {
 		}
 		Set<BuchiState> accStates = new LinkedHashSet<BuchiState>();
 		Set<BuchiState> otherStates = new LinkedHashSet<BuchiState>();
-		for(BuchiState currState : t.children) {
-			for(String id : currState.transitions.get(s)){
-                BuchiState state = buchi.states.get(id);
-				if(lastUpdated.get(state) < this.currentIteration){
-					lastUpdated.put(state, this.currentIteration);
-					if(state.isFinal){
-						accStates.add(state);
-					} else {
-						otherStates.add(state);
-					}
-				}
-			}
-		}
+        for (TreeNode node : t.children) { // TODO is this really what we want?
+            for(BuchiState currState : node.states) {
+                for(String id : currState.transitions.get(s)){
+                    BuchiState state = buchi.states.get(id);
+                    if(lastUpdated.get(state) < this.currentIteration){
+                        lastUpdated.put(state, this.currentIteration);
+                        if(state.isFinal){
+                            accStates.add(state);
+                        } else {
+                            otherStates.add(state);
+                        }
+                    }
+                }
+            }
+        }
+
 		if(otherStates.isEmpty()){
 			if(accStates.isEmpty() && t.children.isEmpty()){
 				return false; //kill this node
@@ -83,14 +86,16 @@ public class DeterminizationTree {
 				// TODO add child node of accepting states
 			}
 		}
+        return false; // TODO remove, this is just so it'll compile
 	}
-	
+
 	/**
 	 * Returns the array representing the current state
 	 * @return Array representing tree shape
 	 */
 	public int[] getTreeArray(){
 		//TODO
+        return new int[0];
 	}
 	
 	/**
@@ -100,6 +105,7 @@ public class DeterminizationTree {
 	 */
 	public int[] getStateNodesArray(){
 		//TODO
+        return new int[0];
 	}
 	
 	private class TreeNode{
