@@ -1,5 +1,5 @@
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.stream.*;
 import java.util.regex.*;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -17,15 +17,15 @@ class Buchi {
      * Interprets a graphviz graph into an automaton.
      */
     public Buchi(InputStream in) {
-        Pattern statePattern = Pattern.compile("^(?<id>\\w+)\\s\\[label=\"(?<starting>\\*?)(?<labelid>)(?<final>\\$?)\"\\]$");
-        Pattern transitionPattern = Pattern.compile("^\t(?<startID>\\w+)\\s->\\s(?<nextID>\\w+)\\s\\[label=(?<character>\\w)\\]$");
+        Pattern statePattern = Pattern.compile("^(?<id>\\w+)\\s\\[label=\"(?<starting>\\*?)(?<label>\\w+)(?<final>\\$?)\"\\]$");
+        Pattern transitionPattern = Pattern.compile("^\\s+(?<startID>\\w+)\\s->\\s(?<nextID>\\w+)\\s\\[label=(?<character>\\w)\\]$");
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
             for (String line : reader.lines().collect(Collectors.toList())) {
                 Matcher stateMatcher = statePattern.matcher(line);
                 if (stateMatcher.matches()) {
-                    states.put(stateMatcher.group("id"), new BuchiState(stateMatcher.group("id"), stateMatcher.group("starting") == "*",
-                                stateMatcher.group("final") == "$"));
+                    states.put(stateMatcher.group("id"), new BuchiState(stateMatcher.group("id"), stateMatcher.group("starting").equals("*"),
+                                stateMatcher.group("final").equals("$")));
                     continue;
                 }
                 Matcher transitionMatcher = transitionPattern.matcher(line);
@@ -39,10 +39,10 @@ class Buchi {
                         // convert a single element to an array as ugly hack to initialize set with value
                         state.transitions.put(nextChar, new HashSet<String>(Arrays.asList(transitionMatcher.group("nextID"))));
                     }
-                    continue;
                 }
                 else {
-                    System.out.println("Invalid input format.");
+                    System.out.println("Invalid input format:");
+                    System.out.println(line);
                 }
             }
         }
@@ -56,5 +56,21 @@ class Buchi {
      */
     public static void main(String[] args) {
         System.out.println(new Buchi(System.in)); // TODO call determinization function, move this to new class
+    }
+
+    public static <T> Stream<T> valueStream(Map<?,T> map) {
+        // TODO move this to a helper class or extend map
+        return map.entrySet().stream().map(Map.Entry::getValue);
+    }
+
+    public String toString() {
+        String graphviz = valueStream(states)
+            .map(BuchiState::toString)
+            .collect(Collectors.joining("\n"));
+        graphviz += "\n";
+        graphviz += valueStream(states)
+            .map(BuchiState::transitionsToString)
+            .collect(Collectors.joining("\n"));
+        return graphviz;
     }
 }

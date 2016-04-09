@@ -20,7 +20,7 @@ public class DeterminizationTree {
 	 */
 	public DeterminizationTree(Buchi buchi){
 		this.currentIteration = 0;
-		this.nodelist = new LinkedHashList<TreeNode>();
+		this.nodelist = new LinkedList<TreeNode>(); // TODO this used to be LinkedHashList (which doesn't exist). What was it supposed to be?
 		this.lastUpdated = new HashMap<BuchiState, Integer>();
 		Set<BuchiState> initialStates = new HashSet<BuchiState>();
 		for(Map.Entry<String, BuchiState> stateEntry : buchi.states.entrySet()) {
