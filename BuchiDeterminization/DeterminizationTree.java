@@ -82,6 +82,7 @@ public class DeterminizationTree {
 			if(accStates.isEmpty() && t.children.isEmpty()){
 				return false; //kill this node
 			} else {
+				// reached accepting state:
 				t.states.addAll(accStates);
 				TreeNode next;
 				ListIterator<TreeNode> iter = t.children.listIterator();
@@ -110,8 +111,11 @@ public class DeterminizationTree {
 	 * @return Array representing tree shape
 	 */
 	public int[] getTreeArray(){
-		//TODO
-        return new int[0];
+		int[] toRet = new int[this.nodelist.size()];
+		for(int i = 0; i < this.nodelist.size(); i++){
+			toRet[i] = this.nodelist.indexOf(this.nodelist.get(i).parent);
+		}
+        return toRet;
 	}
 	
 	/**
