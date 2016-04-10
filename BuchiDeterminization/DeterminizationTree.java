@@ -8,7 +8,7 @@ public class DeterminizationTree {
  */
 	
 	private Buchi buchi;
-	private List<TreeNode> nodelist;
+	private LinkedHashedSet<TreeNode> nodelist;
 	private int number;
 	private Map<BuchiState, Integer> lastUpdated; // TODO can this map ids instead of states?
 	private int currentIteration;
@@ -20,7 +20,7 @@ public class DeterminizationTree {
 	 */
 	public DeterminizationTree(Buchi buchi){
 		this.currentIteration = 0;
-		this.nodelist = new LinkedList<TreeNode>(); // TODO this used to be LinkedHashList (which doesn't exist). What was it supposed to be?
+		this.nodelist = new LinkedHashedSet<TreeNode>();
 		this.lastUpdated = new HashMap<BuchiState, Integer>();
 		Set<BuchiState> initialStates = new HashSet<BuchiState>();
 		for(Map.Entry<String, BuchiState> stateEntry : buchi.states.entrySet()) {
@@ -51,7 +51,10 @@ public class DeterminizationTree {
 		if(!t.children.isEmpty()){
 			ListIterator<TreeNode> iter = t.children.listIterator();
 			while(iter.hasNext()){
-				if(doRecursiveStep(s, iter.next()) == false){
+				TreeNode next = iter.next();
+				if(doRecursiveStep(s, next) == false){
+					this.number = 2*this.nodelist.getIndex(next); // return false
+					this.nodelist.remove(next);
 					iter.remove();
 				}
 			}
@@ -74,19 +77,32 @@ public class DeterminizationTree {
             }
         }
 
+        t.states = otherStates;
 		if(otherStates.isEmpty()){
 			if(accStates.isEmpty() && t.children.isEmpty()){
 				return false; //kill this node
 			} else {
-				// TODO reached accepting state
+				t.states.addAll(accStates);
+				TreeNode next;
+				ListIterator<TreeNode> iter = t.children.listIterator();
+				while(iter.hasNext()){
+					// remove all children:
+					next = iter.next();
+					t.states.addAll(next.states);
+					this.nodelist.remove(next);
+					iter.remove();
+				}
+				this.number = 2*this.nodelist.getIndex(t)+1; // return true
 			}
 		} else {
-			t.states = otherStates;
 			if(!accStates.isEmpty()){
-				// TODO add child node of accepting states
+				// Add new child with all states that accepted:
+				TreeNode newChild = new TreeNode(accStates, t);
+				t.children.add(newChild);
+				this.nodelist.add(newChild);
 			}
 		}
-        return false; // TODO remove, this is just so it'll compile
+        return true;
 	}
 
 	/**
