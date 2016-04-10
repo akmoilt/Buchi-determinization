@@ -8,7 +8,7 @@ public class DeterminizationTree {
  */
 	
 	private Buchi buchi;
-	private LinkedHashedSet<TreeNode> nodelist;
+	private List<TreeNode> nodelist;
 	private int number;
 	private Map<BuchiState, Integer> lastUpdated; // TODO can this map ids instead of states?
 	private int currentIteration;
@@ -20,7 +20,7 @@ public class DeterminizationTree {
 	 */
 	public DeterminizationTree(Buchi buchi){
 		this.currentIteration = 0;
-		this.nodelist = new LinkedHashedSet<TreeNode>();
+		this.nodelist = new LinkedList<TreeNode>();
 		this.lastUpdated = new HashMap<BuchiState, Integer>();
 		Set<BuchiState> initialStates = new HashSet<BuchiState>();
 		for(Map.Entry<String, BuchiState> stateEntry : buchi.states.entrySet()) {
@@ -42,7 +42,7 @@ public class DeterminizationTree {
 		// if we killed all paths, return 0 (lowest false)
 		this.currentIteration++;
 		if(nodelist.isEmpty()){ return 0; }
-		doRecursiveStep(s, nodelist.get(0));
+		doRecursiveStep(s, nodelist.iterator().next());
 		return this.number;
 	}
 	//implementation of doStep:
@@ -53,7 +53,7 @@ public class DeterminizationTree {
 			while(iter.hasNext()){
 				TreeNode next = iter.next();
 				if(doRecursiveStep(s, next) == false){
-					this.number = 2*this.nodelist.getIndex(next); // return false
+					this.number = 2*this.nodelist.indexOf(next); // return false
 					this.nodelist.remove(next);
 					iter.remove();
 				}
@@ -92,7 +92,7 @@ public class DeterminizationTree {
 					this.nodelist.remove(next);
 					iter.remove();
 				}
-				this.number = 2*this.nodelist.getIndex(t)+1; // return true
+				this.number = 2*this.nodelist.indexOf(t)+1; // return true
 			}
 		} else {
 			if(!accStates.isEmpty()){
