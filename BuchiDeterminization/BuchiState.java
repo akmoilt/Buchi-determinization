@@ -12,28 +12,22 @@ class BuchiState extends State {
 
     // TODO add hashcode and equals
 
-    /**
-     * Returns string representing state in graphviz format
-     */
+    @Override
     public String toString() {
         return id + " " + "[label=\"" + (isInitial ? "*" : "") + id + (isFinal ? "$" : "") + "\"]";
     }
 
-    /**
-     * Returns string representing the set of transitions in graphviz format
-     */
+    @Override
     public String transitionToString(Character nextChar) {
         return transitions.get(nextChar).stream()
             .map(s -> "\t" + id + " -> " + s + " [label=" + nextChar + "]")
             .collect(Collectors.joining("\n"));
     }
 
-    /**
-     * Returns representation of all transitions from this state
-     */
+    @Override
     public String transitionsToString() {
-        return transitions.entrySet().stream()
-            .map(e -> transitionToString(e.getKey()))
+        return transitions.keySet().stream()
+            .map(c -> transitionToString(c))
             .collect(Collectors.joining("\n"));
     }
 }

@@ -1,21 +1,23 @@
 import java.util.*;
+import java.util.stream.*;
 
 /**
  * Represents a deterministic numbered automaton (DNA).
  */
 class Numbered {
-    private Set<NumberedState> states;
+    private Map<String, NumberedState> states;
 
     /**
      * Converts the given tree into a full DNA.
      */
     public Numbered(DeterminizationTree t) {
-    	this.states = new LinkedHashedSet<NumberedState>();
-    	Queue<DeterminizationTree> q = new Queue<DeterminizationTree>();
+    	this.states = new LinkedHashMap<String, NumberedState>();
+    	Queue<DeterminizationTree> q = new ArrayDeque<DeterminizationTree>();
     	q.add(t);
     	while(!q.isEmpty()){
+            // TODO this should probably be done by id instead
     		NumberedState state = getState(t);
-    		if(!this.states.contains(state)){
+    		if(!this.states.containsValue(state)){
     			// TODO add transition and resulting trees to queue
     		}
     		t = q.remove();
@@ -23,10 +25,10 @@ class Numbered {
     }
     // sub-function for constructor:
     public static NumberedState getState(DeterminizationTree t){
-    	string id = Arrays.toString(t.getTreeArray());
+    	String id = Arrays.toString(t.getTreeArray());
     	id += " ";
-    	id += Arrays.toString(t.getStateNodeMap().toArray());
-    	return new NumberedState();
+    	id += t.getStateNodeMap();
+    	return new NumberedState(id);
     }
 
     /**
@@ -35,6 +37,13 @@ class Numbered {
      */
     public String toString() {
         // TODO
-        return "";
+        String graphviz = states.values().stream()
+            .map(NumberedState::toString)
+            .collect(Collectors.joining("\n"));
+        graphviz += "\n";
+        graphviz += states.values().stream()
+            .map(NumberedState::transitionsToString)
+            .collect(Collectors.joining("\n"));
+        return graphviz;
     }
 }

@@ -53,6 +53,15 @@ class Buchi {
     }
 
     /**
+     * Returns set of all characters in alphabet.
+     */
+    public Set<Character> getAlphabet() {
+        return states.values().stream().
+            map(s->s.transitions.keySet())
+            .collect(HashSet<Character>::new, Set::addAll, Set::addAll); // Takes the union of the sets
+    }
+
+    /**
      * Reads NBA in graphviz format from stdin, prints the resulting DNA, again in graphviz format
      */
     public static void main(String[] args) {
@@ -62,7 +71,7 @@ class Buchi {
     	// TODO test tree
     	Numbered numberedOut = new Numbered(tree);
     	// TODO test numbered
-    	System.out.println(numberedOut.toString);
+    	System.out.println(numberedOut);
     }
 
     public String toString() {
