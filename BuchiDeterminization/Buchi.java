@@ -21,10 +21,11 @@ class Buchi {
         Pattern transitionPattern = Pattern.compile("^\\s+(?<startID>\\w+)\\s->\\s(?<nextID>\\w+)\\s\\[label=(?<character>\\w)\\]$");
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
-            for (String line : reader.lines().collect(Collectors.toList())) {
+            for (String line : (Iterable<String>)reader.lines()::iterator) {
                 Matcher stateMatcher = statePattern.matcher(line);
                 if (stateMatcher.matches()) {
-                    states.put(stateMatcher.group("id"), new BuchiState(stateMatcher.group("id"), stateMatcher.group("starting").equals("*"),
+                    states.put(stateMatcher.group("id"), new BuchiState(stateMatcher.group("id"),
+                                stateMatcher.group("starting").equals("*"),
                                 stateMatcher.group("final").equals("$")));
                     continue;
                 }
@@ -58,17 +59,12 @@ class Buchi {
         System.out.println(new Buchi(System.in)); // TODO call determinization function, move this to new class
     }
 
-    public static <T> Stream<T> valueStream(Map<?,T> map) {
-        // TODO move this to a helper class or extend map
-        return map.entrySet().stream().map(Map.Entry::getValue);
-    }
-
     public String toString() {
-        String graphviz = valueStream(states)
+        String graphviz = states.values().stream()
             .map(BuchiState::toString)
             .collect(Collectors.joining("\n"));
         graphviz += "\n";
-        graphviz += valueStream(states)
+        graphviz += states.values().stream()
             .map(BuchiState::transitionsToString)
             .collect(Collectors.joining("\n"));
         return graphviz;

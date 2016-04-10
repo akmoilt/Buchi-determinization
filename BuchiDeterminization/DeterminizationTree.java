@@ -1,4 +1,5 @@
 import java.util.*;
+import java.util.stream.*;
 
 public class DeterminizationTree {
 /** 
@@ -22,12 +23,12 @@ public class DeterminizationTree {
 		this.currentIteration = 0;
 		this.nodelist = new LinkedList<TreeNode>();
 		this.lastUpdated = new HashMap<BuchiState, Integer>();
-		Set<BuchiState> initialStates = new HashSet<BuchiState>();
+		Map<String, BuchiState> initialStates = new HashMap<>();
 		for(Map.Entry<String, BuchiState> stateEntry : buchi.states.entrySet()) {
             BuchiState s = stateEntry.getValue();
 			lastUpdated.put(s, 0);
 			if(s.isInitial){
-				initialStates.add(s);
+				initialStates.put(s.id, s);
 			}
 		}
 		nodelist.add(new TreeNode(initialStates, null));
@@ -59,19 +60,17 @@ public class DeterminizationTree {
 				}
 			}
 		}
-		Set<BuchiState> accStates = new LinkedHashSet<BuchiState>();
-		Set<BuchiState> otherStates = new LinkedHashSet<BuchiState>();
-        for (TreeNode node : t.children) { // TODO is this really what we want?
-            for(BuchiState currState : node.states) {
-                for(String id : currState.transitions.get(s)){
-                    BuchiState state = buchi.states.get(id);
-                    if(lastUpdated.get(state) < this.currentIteration){
-                        lastUpdated.put(state, this.currentIteration);
-                        if(state.isFinal){
-                            accStates.add(state);
-                        } else {
-                            otherStates.add(state);
-                        }
+		Map<String, BuchiState> accStates = new LinkedHashMap<>();
+		Map<String, BuchiState> otherStates = new LinkedHashMap<>();
+        for(BuchiState currState : t.states.values()) {
+            for(String id : currState.transitions.get(s)){
+                BuchiState state = buchi.states.get(id);
+                if(lastUpdated.get(state) < this.currentIteration){
+                    lastUpdated.put(state, this.currentIteration);
+                    if(state.isFinal){
+                        accStates.put(state.id, state);
+                    } else {
+                        otherStates.put(state.id, state);
                     }
                 }
             }
@@ -83,13 +82,13 @@ public class DeterminizationTree {
 				return false; //kill this node
 			} else {
 				// reached accepting state:
-				t.states.addAll(accStates);
+				t.states.putAll(accStates);
 				TreeNode next;
 				ListIterator<TreeNode> iter = t.children.listIterator();
 				while(iter.hasNext()){
 					// remove all children:
 					next = iter.next();
-					t.states.addAll(next.states);
+					t.states.putAll(next.states);
 					this.nodelist.remove(next);
 					iter.remove();
 				}
@@ -119,21 +118,31 @@ public class DeterminizationTree {
 	}
 	
 	/**
-	 * Returns an array that represents the node that each
-	 * state belongs to.
-	 * @return Array of the numbers of the states
+	 * Returns a map mapping each state id to the index of the first node that contains it
 	 */
-	public int[] getStateNodesArray(){
-		//TODO
-        return new int[0];
+	public Map<String, Integer> getStateNodeMap(){
+        Map<String, Integer> map = new HashMap<>();
+        for (String id : buchi.states.keySet()) {
+            int index=-1;
+            for (TreeNode node : nodelist) {
+                if (node.states.containsKey(id)) {
+                    map.put(id, index);
+                    break;
+                }
+                index++;
+            }
+            // TODO does every state necessarily appear in a node?
+            // If not, do we just throw them away?
+        }
+        return map;
 	}
 	
 	private class TreeNode{
-		public Set<BuchiState> states; //represents states of current node
+		public Map<String, BuchiState> states; //represents states of current node
 		public List<TreeNode> children;
 		public TreeNode parent;
 		
-		public TreeNode(Set<BuchiState> states, TreeNode parent){
+		public TreeNode(Map<String, BuchiState> states, TreeNode parent){
 			this.states = states;
 			this.parent = parent;
 		}
