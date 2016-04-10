@@ -53,7 +53,8 @@ public class DeterminizationTree {
 			while(iter.hasNext()){
 				TreeNode next = iter.next();
 				if(doRecursiveStep(s, next) == false){
-					this.number = 2*this.nodelist.indexOf(next); // return false
+					int newNumber = 2*this.nodelist.indexOf(next); // return false
+					this.number = (number < newNumber ? number : newNumber);
 					this.nodelist.remove(next);
 					iter.remove();
 				}
@@ -93,7 +94,8 @@ public class DeterminizationTree {
 					this.nodelist.remove(next);
 					iter.remove();
 				}
-				this.number = 2*this.nodelist.indexOf(t)+1; // return true
+				int newNumber = 2*this.nodelist.indexOf(t)+1; // return true
+				this.number = (number < newNumber ? number : newNumber);
 			}
 		} else {
 			if(!accStates.isEmpty()){

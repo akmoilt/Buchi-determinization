@@ -55,7 +55,13 @@ class Buchi {
      * Reads NBA in graphviz format from stdin, prints the resulting DNA, again in graphviz format
      */
     public static void main(String[] args) {
-        System.out.println(new Buchi(System.in)); // TODO call determinization function, move this to new class
+    	Buchi buchiIn = new Buchi(System.in);
+        // TODO test buchi
+    	DeterminizationTree tree = new DeterminizationTree(buchiIn);
+    	// TODO test tree
+    	Numbered numberedOut = new Numbered(tree);
+    	// TODO test numbered
+    	System.out.println(numberedOut.toString);
     }
 
     public static <T> Stream<T> valueStream(Map<?,T> map) {
