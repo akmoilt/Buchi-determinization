@@ -1,6 +1,10 @@
+import java.util.*;
+import java.util.stream.*;
+
 abstract class State {
     public final String id;
     public final boolean isInitial;
+    Map<Character, ?> transitions;
 
     public State(String id, boolean isInitial) {
         this.id = id;
@@ -20,5 +24,10 @@ abstract class State {
     /**
      * Returns representation of all transitions from this state
      */
-    public abstract String transitionsToString();
+    // public abstract String transitionsToString();
+    public String transitionsToString() {
+        return transitions.keySet().stream()
+            .map(c -> transitionToString(c))
+            .collect(Collectors.joining("\n"));
+    }
 }

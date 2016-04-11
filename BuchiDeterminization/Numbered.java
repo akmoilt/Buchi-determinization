@@ -5,7 +5,7 @@ import java.util.stream.*;
  * Represents a deterministic numbered automaton (DNA).
  */
 class Numbered {
-    private Map<String, NumberedState> states;
+    Map<String, NumberedState> states;
 
     /**
      * Converts the given tree into a full DNA.

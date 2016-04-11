@@ -23,11 +23,4 @@ class NumberedState extends State {
         return "\t" + id + " -> " + transition.state.id +
             " [label=" + nextChar + "[" + transition.transitionNumber + "]\"]";
     }
-
-    @Override
-    public String transitionsToString() {
-        return transitions.keySet().stream()
-            .map(c -> transitionToString(c))
-            .collect(Collectors.joining("\n"));
-    }
 }
