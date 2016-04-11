@@ -1,9 +1,9 @@
 public class NumberedTransition {
-    public final State state;
+    public final String id;
     public final int transitionNumber;
 
-    public NumberedTransition(State state, int transitionNumber) {
-        this.state = state;
+    public NumberedTransition(String id, int transitionNumber) {
+        this.id = id;
         this.transitionNumber = transitionNumber;
     }
 }

@@ -17,17 +17,22 @@ class Numbered {
     	while(!q.isEmpty()){
             // TODO this should probably be done by id instead
     		NumberedState state = getState(t);
-    		if(!this.states.containsValue(state)){
-    			// TODO add transition and resulting trees to queue
+    		if(!this.states.containsValue(state.id)){
+    			for(char s : t.getAlphabet()){
+        			DeterminizationTree newT = t.doStep(s);
+        			state.transitions.add(s,
+        					new NumberedTransition(getState(newT).id, newT.getNumber()));
+        			q.add(newT);
+    			}
     		}
     		t = q.remove();
     	}
     }
     // sub-function for constructor:
-    public static NumberedState getState(DeterminizationTree t){
+    private static NumberedState getState(DeterminizationTree t){
     	String id = Arrays.toString(t.getTreeArray());
     	id += " ";
-    	id += t.getStateNodeMap();
+    	id += t.getStateNodeMap(); // TODO this isn't a string!
     	return new NumberedState(id);
     }
 
