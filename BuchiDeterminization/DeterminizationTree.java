@@ -154,7 +154,13 @@ public class DeterminizationTree {
 	}
 	
 	private DeterminizationTree deepCopy(){
-		// TODO
+		DeterminizationTree toRet = new DeterminizationTree(this.buchi);
+		toRet.currentIteration = this.currentIteration;
+		toRet.lastUpdated = new HashMap<>();
+		toRet.lastUpdated.putAll(this.lastUpdated);
+		toRet.nodelist = new LinkedList<>();
+		this.nodelist.get(0).copyIntoList(null, toRet.nodelist);
+		return toRet;
 	}
 	
 	private class TreeNode{
@@ -165,6 +171,15 @@ public class DeterminizationTree {
 		public TreeNode(Map<String, BuchiState> states, TreeNode parent){
 			this.states = states;
 			this.parent = parent;
+			this.children = new LinkedList<>();
+		}
+		
+		public void copyIntoList(TreeNode parent, List<TreeNode> nodelist){
+			TreeNode toRet = new TreeNode(this.states, parent);
+			nodelist.add(toRet);
+			for(TreeNode child : this.children){
+				toRet.children.add(child.copy(toRet, nodelist))
+			}
 		}
 		
 		//TODO overide equals and hash
