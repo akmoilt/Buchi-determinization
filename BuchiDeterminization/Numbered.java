@@ -19,7 +19,10 @@ class Numbered {
     		NumberedState state = getState(t);
     		if(!this.states.containsValue(state.id)){
     			for(char s : t.getAlphabet()){
-        			// TODO add transition and resulting trees to queue
+        			DeterminizationTree newT = t.doStep(s);
+        			state.transitions.add(s,
+        					new NumberedTransition(getState(newT).id, newT.getNumber()));
+        			q.add(newT);
     			}
     		}
     		t = q.remove();
