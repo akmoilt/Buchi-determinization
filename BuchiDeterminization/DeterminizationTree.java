@@ -39,12 +39,13 @@ public class DeterminizationTree {
 	 * @param s - the input char
 	 * @return number for numbered automata
 	 */
-	public int doStep(char s){
+	public DeterminizationTree doStep(char s){
 		// if we killed all paths, return 0 (lowest false)
 		this.currentIteration++;
 		if(nodelist.isEmpty()){ return 0; }
-		doRecursiveStep(s, nodelist.iterator().next());
-		return this.number;
+		DeterminizationTree toRet = this.deepCopy();
+		toRet.doRecursiveStep(s, toRet.nodelist.iterator().next());
+		return toRet;
 	}
 	//implementation of doStep:
 	private boolean doRecursiveStep(char s, TreeNode t){
@@ -106,6 +107,13 @@ public class DeterminizationTree {
 		}
         return true;
 	}
+	
+	/**
+	 * Returns the number from the last step
+	 */
+	public int getNumber(){
+		return this.number;
+	}
 
 	/**
 	 * Returns the array representing the current state
@@ -135,8 +143,18 @@ public class DeterminizationTree {
             }
             // TODO does every state necessarily appear in a node?
             // If not, do we just throw them away?
+            // TODO states that dont appear are supposed to have -1
+            // in the array or something
         }
         return map;
+	}
+	
+	public Set<Character> getAlphabet(){
+		return buchi.getAlphabet();
+	}
+	
+	private DeterminizationTree deepCopy(){
+		// TODO
 	}
 	
 	private class TreeNode{
