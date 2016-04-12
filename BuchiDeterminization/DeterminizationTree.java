@@ -20,6 +20,7 @@ public class DeterminizationTree {
 	 * @param buchi - the NBA to be determinized
 	 */
 	public DeterminizationTree(Buchi buchi){
+        this.buchi = buchi;
 		this.currentIteration = 0;
 		this.nodelist = new LinkedList<TreeNode>();
 		this.lastUpdated = new HashMap<BuchiState, Integer>();
