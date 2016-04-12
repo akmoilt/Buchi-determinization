@@ -12,6 +12,18 @@ abstract class State {
     }
 
     /**
+     * States are equal if they have the same id.
+     * ids should be unique
+     */
+    public boolean equals(State other) {
+        return this.id.equals(other.id);
+    }
+
+    public int hashCode() {
+        return this.id.hashCode();
+    }
+
+    /**
      * Returns string representing state in graphviz format
      */
     public abstract String toString();

@@ -10,8 +10,6 @@ class BuchiState extends State {
         this.isFinal = isFinal;
     }
 
-    // TODO add hashcode and equals
-
     @Override
     public String toString() {
         return id + " " + "[label=\"" + (isInitial ? "*" : "") + id + (isFinal ? "$" : "") + "\"]";

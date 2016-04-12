@@ -9,8 +9,6 @@ class NumberedState extends State {
         transitions = new HashMap<>();
     }
 
-    // TODO add hashcode and equals
-
     @Override
     public String toString() {
         // TODO
