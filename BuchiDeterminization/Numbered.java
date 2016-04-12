@@ -16,16 +16,16 @@ class Numbered {
     	q.add(t);
     	while(!q.isEmpty()){
             // TODO this should probably be done by id instead
-    		NumberedState state = getState(t);
+    		DeterminizationTree curr = q.remove();
+    		NumberedState state = getState(curr);
     		if(!this.states.containsValue(state.id)){
-    			for(char s : t.getAlphabet()){
-        			DeterminizationTree newT = t.doStep(s);
+    			for(char s : curr.getAlphabet()){
+        			DeterminizationTree newT = curr.doStep(s);
         			state.transitions.put(s,
         					new NumberedTransition(getState(newT).id, newT.getNumber()));
         			q.add(newT);
     			}
     		}
-    		t = q.remove();
     	}
     }
     // sub-function for constructor:
