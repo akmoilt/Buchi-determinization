@@ -23,4 +23,11 @@ class BuchiState extends State {
             .map(s -> "\t" + id + " -> " + s + " [label=" + nextChar + "]")
             .collect(Collectors.joining("\n"));
     }
+
+    @Override
+    public String transitionsToString() {
+        return transitions.keySet().stream()
+            .map(c -> transitionToString(c))
+            .collect(Collectors.joining("\n"));
+    }
 }

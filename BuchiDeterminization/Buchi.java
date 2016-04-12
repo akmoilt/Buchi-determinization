@@ -66,11 +66,9 @@ class Buchi {
      */
     public static void main(String[] args) {
     	Buchi buchiIn = new Buchi(System.in);
-        // TODO test buchi
+        System.out.println(buchiIn);
     	DeterminizationTree tree = new DeterminizationTree(buchiIn);
-    	// TODO test tree
     	Numbered numberedOut = new Numbered(tree);
-    	// TODO test numbered
     	System.out.println(numberedOut);
     }
 

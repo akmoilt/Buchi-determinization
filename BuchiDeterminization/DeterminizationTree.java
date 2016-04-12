@@ -154,6 +154,7 @@ public class DeterminizationTree {
 	
 	private DeterminizationTree deepCopy(){
 		DeterminizationTree toRet = new DeterminizationTree(this.buchi);
+        toRet.buchi = this.buchi; // TODO Is buchi ever changed? Does it need to be deep copied as well?
 		toRet.currentIteration = this.currentIteration;
 		toRet.lastUpdated = new HashMap<>();
 		toRet.lastUpdated.putAll(this.lastUpdated);
