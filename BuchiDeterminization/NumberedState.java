@@ -20,7 +20,7 @@ class NumberedState extends State {
     @Override
     public String transitionToString(Character nextChar) {
         NumberedTransition transition = transitions.get(nextChar);
-        return "\t" + id + " -> " + transition.state.id +
+        return "\t" + id + " -> " + transition.id +
             " [label=" + nextChar + "[" + transition.transitionNumber + "]\"]";
     }
 }

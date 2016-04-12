@@ -20,7 +20,7 @@ class Numbered {
     		if(!this.states.containsValue(state.id)){
     			for(char s : t.getAlphabet()){
         			DeterminizationTree newT = t.doStep(s);
-        			state.transitions.add(s,
+        			state.transitions.put(s,
         					new NumberedTransition(getState(newT).id, newT.getNumber()));
         			q.add(newT);
     			}

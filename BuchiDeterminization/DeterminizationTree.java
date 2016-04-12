@@ -37,13 +37,12 @@ public class DeterminizationTree {
 	/**
 	 * Does one step on the tree, with char s.
 	 * @param s - the input char
-	 * @return number for numbered automata
+	 * @return The new tree after the step
 	 */
 	public DeterminizationTree doStep(char s){
-		// if we killed all paths, return 0 (lowest false)
 		this.currentIteration++;
-		if(nodelist.isEmpty()){ return 0; }
 		DeterminizationTree toRet = this.deepCopy();
+		if(nodelist.isEmpty()){ return toRet; } // TODO is this correct?
 		toRet.doRecursiveStep(s, toRet.nodelist.iterator().next());
 		return toRet;
 	}
@@ -174,14 +173,13 @@ public class DeterminizationTree {
 			this.children = new LinkedList<>();
 		}
 		
-		public void copyIntoList(TreeNode parent, List<TreeNode> nodelist){
+		public TreeNode copyIntoList(TreeNode parent, List<TreeNode> nodelist){
 			TreeNode toRet = new TreeNode(this.states, parent);
 			nodelist.add(toRet);
 			for(TreeNode child : this.children){
-				toRet.children.add(child.copy(toRet, nodelist))
+				toRet.children.add(child.copyIntoList(toRet, nodelist));
 			}
+            return toRet;
 		}
-		
-		//TODO overide equals and hash
 	}
 }
