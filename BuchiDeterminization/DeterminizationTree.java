@@ -65,7 +65,12 @@ public class DeterminizationTree {
 		Map<String, BuchiState> accStates = new LinkedHashMap<>();
 		Map<String, BuchiState> otherStates = new LinkedHashMap<>();
         for(BuchiState currState : t.states.values()) {
-            for(String id : currState.transitions.get(s)){
+            Set<String> nextStates = currState.transitions.get(s);
+            if (nextStates == null) {
+                // There are no transitions with the character s
+                continue;
+            }
+            for(String id : nextStates){
                 BuchiState state = buchi.states.get(id);
                 if(lastUpdated.get(state) < this.currentIteration){
                     lastUpdated.put(state, this.currentIteration);
