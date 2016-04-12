@@ -18,13 +18,14 @@ class Numbered {
             // TODO this should probably be done by id instead
     		DeterminizationTree curr = q.remove();
     		NumberedState state = getState(curr);
-    		if(!this.states.containsValue(state.id)){
+    		if(!this.states.containsKey(state.id)){
     			for(char s : curr.getAlphabet()){
         			DeterminizationTree newT = curr.doStep(s);
         			state.transitions.put(s,
         					new NumberedTransition(getState(newT).id, newT.getNumber()));
         			q.add(newT);
     			}
+                states.put(state.id, state);
     		}
     	}
     }
@@ -32,7 +33,7 @@ class Numbered {
     private static NumberedState getState(DeterminizationTree t){
     	String id = Arrays.toString(t.getTreeArray());
     	id += " ";
-    	id += t.getStateNodeMap(); // TODO this isn't a string!
+    	id += t.getStateNodeMap();
     	return new NumberedState(id);
     }
 
