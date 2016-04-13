@@ -33,19 +33,24 @@ class Numbered {
     	}
 
         sortedIDs = states.keySet().stream().sorted().collect(Collectors.toList());
-        int index = 1;
+        int index = 0;
+        int initialIndex = 0;
+        NumberedState initialState = null;
         for (String id : sortedIDs) {
             NumberedState state = states.get(id);
             if (state.isInitial) {
                 state.name = "Q0";
-                sortedIDs.remove(id);
-                sortedIDs.add(0, id);
+                initialIndex = index;
+                initialState = state;
+                index++;
             }
             else {
                 state.name = "Q" + index;
                 index++;
             }
         }
+        sortedIDs.remove(initialIndex);
+        sortedIDs.add(0, initialState.id);
     }
     // sub-function for constructor:
     private static String getStateID(DeterminizationTree t){
