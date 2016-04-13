@@ -3,29 +3,21 @@ import java.util.stream.*;
 
 class NumberedState extends State {
     public final Map<Character, NumberedTransition> transitions;
+    String name = "We messed up!";
 
-    public NumberedState(String id) {
-        super(id, id.equals("q_0"));
+    public NumberedState(String id, boolean isInitial) {
+        super(id, isInitial);
         transitions = new HashMap<>();
     }
 
     @Override
     public String toString() {
-        // TODO
-        return "";
+        return name + " [label=\"" + id + "\"]";
     }
 
     @Override
     public String transitionToString(Character nextChar) {
         NumberedTransition transition = transitions.get(nextChar);
-        return "\t" + id + " -> " + transition.id +
-            " [label=" + nextChar + "[" + transition.transitionNumber + "]\"]";
-    }
-
-    @Override
-    public String transitionsToString() {
-        return transitions.keySet().stream()
-            .map(c -> transitionToString(c))
-            .collect(Collectors.joining("\n"));
+        return "[label=\"" + nextChar + "[" + transition.transitionNumber + "]\"]";
     }
 }

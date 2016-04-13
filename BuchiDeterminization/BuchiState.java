@@ -22,7 +22,10 @@ class BuchiState extends State {
             .collect(Collectors.joining("\n"));
     }
 
-    @Override
+    /**
+     * Returns representation of all transitions from this state.
+     * This is not concrete because of a strange bug where transitions would always be null here.
+     */
     public String transitionsToString() {
         return transitions.keySet().stream()
             .map(c -> transitionToString(c))

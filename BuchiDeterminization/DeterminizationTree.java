@@ -43,7 +43,11 @@ public class DeterminizationTree {
 	public DeterminizationTree doStep(char s){
 		this.currentIteration++;
 		DeterminizationTree toRet = this.deepCopy();
-		if(nodelist.isEmpty()){ return toRet; } // TODO is this correct?
+		if(nodelist.isEmpty()) {
+            toRet.number = 0;
+            return toRet;
+        }
+        toRet.number = buchi.states.size()*2 + 3;
 		toRet.doRecursiveStep(s, toRet.nodelist.iterator().next());
 		return toRet;
 	}
@@ -125,33 +129,31 @@ public class DeterminizationTree {
 	 * @return Array representing tree shape
 	 */
 	public int[] getTreeArray(){
-		int[] toRet = new int[this.nodelist.size()];
-		for(int i = 0; i < this.nodelist.size(); i++){
-			toRet[i] = this.nodelist.indexOf(this.nodelist.get(i).parent);
+		int[] toRet = new int[this.nodelist.size()-1];
+		for(int i = 0; i < this.nodelist.size()-1; i++){
+			toRet[i] = this.nodelist.indexOf(this.nodelist.get(i+1).parent);
 		}
         return toRet;
 	}
 	
-	/**
-	 * Returns a map mapping each state id to the index of the first node that contains it
-	 */
-	public Map<String, Integer> getStateNodeMap(){
-        Map<String, Integer> map = new HashMap<>();
+	public String getStateMappingString(){
+        String toRet = "[";
         for (String id : buchi.states.keySet()) {
-            int index=-1;
+            int index = 0;
+            boolean wasFound = false;
             for (TreeNode node : nodelist) {
                 if (node.states.containsKey(id)) {
-                    map.put(id, index);
+                    toRet += index + " ";
+                    wasFound = true;
                     break;
                 }
                 index++;
             }
-            // TODO does every state necessarily appear in a node?
-            // If not, do we just throw them away?
-            // TODO states that dont appear are supposed to have -1
-            // in the array or something
+            if (!wasFound) {
+                toRet += "$ ";
+            }
         }
-        return map;
+        return toRet.substring(0, toRet.length()-1) + "]";
 	}
 	
 	public Set<Character> getAlphabet(){
