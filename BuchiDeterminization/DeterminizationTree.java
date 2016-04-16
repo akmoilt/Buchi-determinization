@@ -22,7 +22,7 @@ public class DeterminizationTree {
         this.buchi = buchi;
 		this.currentIteration = 0;
 		this.nodelist = new LinkedList<TreeNode>();
-		this.lastUpdated = new HashMap<BuchiState, Integer>();
+		this.lastUpdated = new HashMap<>();
 		Map<String, BuchiState> initialStates = new HashMap<>();
 		for(Map.Entry<String, BuchiState> stateEntry : buchi.states.entrySet()) {
             BuchiState s = stateEntry.getValue();
