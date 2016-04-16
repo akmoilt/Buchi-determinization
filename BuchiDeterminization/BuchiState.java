@@ -12,13 +12,13 @@ class BuchiState extends State {
 
     @Override
     public String toString() {
-        return id + " " + "[label=\"" + (isInitial ? "*" : "") + id + (isFinal ? "$" : "") + "\"]";
+        return "\t" + id + " " + "[label=\"" + (isInitial ? "*" : "") + id + (isFinal ? "$" : "") + "\"]";
     }
 
     @Override
     public String transitionToString(Character nextChar) {
         return transitions.get(nextChar).stream()
-            .map(s -> "\t" + id + " -> " + s + " [label=" + nextChar + "]")
+            .map(s -> "\t\t" + id + " -> " + s + " [label=" + nextChar + "]")
             .collect(Collectors.joining("\n"));
     }
 

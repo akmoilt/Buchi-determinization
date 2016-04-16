@@ -17,7 +17,7 @@ class Buchi {
      * Interprets a graphviz graph into an automaton.
      */
     public Buchi(InputStream in) {
-        Pattern statePattern = Pattern.compile("^(?<id>\\w+)\\s\\[label=\"(?<starting>\\*?)(?<label>\\w+)(?<final>\\$?)\"\\]$");
+        Pattern statePattern = Pattern.compile("^\\s*(?<id>\\w+)\\s\\[label=\"(?<starting>\\*?)(?<label>\\w+)(?<final>\\$?)\"\\]$");
         Pattern transitionPattern = Pattern.compile("^\\s+(?<startID>\\w+)\\s->\\s(?<nextID>\\w+)\\s\\[label=(?<character>\\w)\\]$");
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
@@ -66,7 +66,6 @@ class Buchi {
      */
     public static void main(String[] args) {
     	Buchi buchiIn = new Buchi(System.in);
-        System.out.println(buchiIn);
     	DeterminizationTree tree = new DeterminizationTree(buchiIn);
     	Numbered numberedOut = new Numbered(tree);
     	System.out.println(numberedOut);

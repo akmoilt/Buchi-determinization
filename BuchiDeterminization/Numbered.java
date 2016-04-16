@@ -65,12 +65,12 @@ class Numbered {
      */
     public String toString() {
         String graphviz = sortedIDs.stream()
-            .map(id -> states.get(id).toString())
+            .map(id -> "\t" + states.get(id).toString())
             .collect(Collectors.joining("\n"));
         graphviz += "\n";
         graphviz += sortedIDs.stream()
             .map(id -> states.get(id).transitions.entrySet().stream()
-                    .map(entry -> "\t" + states.get(id).name + "->" +
+                    .map(entry -> "\t\t" + states.get(id).name + "->" +
                         states.get(entry.getValue().id).name + " " +
                         states.get(id).transitionToString(entry.getKey()))
                     .sorted().collect(Collectors.joining("\n")))
