@@ -11,9 +11,8 @@ public class DeterminizationTree {
 	private Buchi buchi;
 	private List<TreeNode> nodelist;
 	private int number;
-	private Map<BuchiState, Integer> lastUpdated; // TODO can this map ids instead of states?
+	private Map<String, Integer> lastUpdated;
 	private int currentIteration;
-	//TODO add other relevant fields
 	
 	/**
 	 * Constructor for Tree.
@@ -27,7 +26,7 @@ public class DeterminizationTree {
 		Map<String, BuchiState> initialStates = new HashMap<>();
 		for(Map.Entry<String, BuchiState> stateEntry : buchi.states.entrySet()) {
             BuchiState s = stateEntry.getValue();
-			lastUpdated.put(s, 0);
+			lastUpdated.put(s.id, 0);
 			if(s.isInitial){
 				initialStates.put(s.id, s);
 			}
@@ -76,8 +75,8 @@ public class DeterminizationTree {
             }
             for(String id : nextStates){
                 BuchiState state = buchi.states.get(id);
-                if(lastUpdated.get(state) < this.currentIteration){
-                    lastUpdated.put(state, this.currentIteration);
+                if(lastUpdated.get(state.id) < this.currentIteration){
+                    lastUpdated.put(state.id, this.currentIteration);
                     if(state.isFinal){
                         accStates.put(state.id, state);
                     } else {
