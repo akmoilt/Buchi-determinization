@@ -93,6 +93,7 @@ public class DeterminizationTree {
 			} else {
 				// reached accepting state:
 				t.states = getSubtreeStatesAndDelete(t);
+				t.states.putAll(accStates);
 				int newNumber = 2*this.nodelist.indexOf(t)+1; // return true
 				this.number = (number < newNumber ? number : newNumber);
 			}
