@@ -46,7 +46,7 @@ public class DeterminizationTree {
             toRet.number = 0;
             return toRet;
         }
-        toRet.number = buchi.states.size()*2 + 3;
+        toRet.number = nodelist.size()*2;
 		toRet.doRecursiveStep(s, toRet.nodelist.iterator().next());
 		return toRet;
 	}
@@ -134,8 +134,8 @@ public class DeterminizationTree {
 	 * @return Array representing tree shape
 	 */
 	public int[] getTreeArray(){
-		int[] toRet = new int[this.nodelist.size()];
-		for(int i = 0; i < this.nodelist.size(); i++){
+		int[] toRet = new int[this.buchi.states.size()-1];
+		for(int i = 0; i < this.nodelist.size()-1; i++){
             int index = this.nodelist.indexOf(this.nodelist.get(i).parent); 
             if (index < 0) {
                 index = 0;

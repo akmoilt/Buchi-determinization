@@ -53,7 +53,7 @@ class Numbered {
     }
     // sub-function for constructor:
     private static String getStateID(DeterminizationTree t){
-    	String id = Arrays.toString(t.getTreeArray());
+    	String id = Arrays.toString(t.getTreeArray()).replace(",", "");
     	id += ",";
     	id += t.getStateMappingString();
         return id;
