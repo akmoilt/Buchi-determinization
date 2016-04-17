@@ -92,7 +92,7 @@ public class DeterminizationTree {
 				return false; //kill this node
 			} else {
 				// reached accepting state:
-				t.states = getSubtreeStatesAndDelete(t)
+				t.states = getSubtreeStatesAndDelete(t);
 				int newNumber = 2*this.nodelist.indexOf(t)+1; // return true
 				this.number = (number < newNumber ? number : newNumber);
 			}
@@ -110,14 +110,15 @@ public class DeterminizationTree {
 	private Map<String, BuchiState> getSubtreeStatesAndDelete(TreeNode node){
 		Map<String, BuchiState> toRet = node.states;
 		TreeNode child;
-		ListIterator<TreeNode> iter = t.children.listIterator();
+		ListIterator<TreeNode> iter = node.children.listIterator();
 		while(iter.hasNext()){
 			// remove all children:
-			next = iter.next();
+			TreeNode next = iter.next();
 			toRet.putAll(getSubtreeStatesAndDelete(next));
 			this.nodelist.remove(next);
 			iter.remove();
 		}
+        return toRet;
 	}
 	
 	/**
@@ -196,5 +197,9 @@ public class DeterminizationTree {
 			}
             return toRet;
 		}
+
+        public String toString() {
+            return "parent: " + parent + ", states: " + states;
+        }
 	}
 }
