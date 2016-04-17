@@ -42,11 +42,10 @@ class Numbered {
                 state.name = "Q0";
                 initialIndex = index;
                 initialState = state;
-                index++;
             }
             else {
-                state.name = "Q" + index;
                 index++;
+                state.name = "Q" + index;
             }
         }
         sortedIDs.remove(initialIndex);
