@@ -42,7 +42,7 @@ public class DeterminizationTree {
 	public DeterminizationTree doStep(char s){
 		this.currentIteration++;
 		DeterminizationTree toRet = this.deepCopy();
-		if(nodelist.isEmpty()) {
+		if(toRet.nodelist.isEmpty()) {
             toRet.number = 0;
             return toRet;
         }
@@ -68,12 +68,12 @@ public class DeterminizationTree {
 		Map<String, BuchiState> accStates = new LinkedHashMap<>();
 		Map<String, BuchiState> otherStates = new LinkedHashMap<>();
         for(BuchiState currState : t.states.values()) {
-            Set<String> nextStates = currState.transitions.get(s);
-            if (nextStates == null) {
+            Set<String> nextStatesID = currState.transitions.get(s);
+            if (nextStatesID == null) {
                 // There are no transitions with the character s
                 continue;
             }
-            for(String id : nextStates){
+            for(String id : nextStatesID){
                 BuchiState state = buchi.states.get(id);
                 if(lastUpdated.get(state.id) < this.currentIteration){
                     lastUpdated.put(state.id, this.currentIteration);
@@ -92,16 +92,7 @@ public class DeterminizationTree {
 				return false; //kill this node
 			} else {
 				// reached accepting state:
-				t.states.putAll(accStates);
-				TreeNode next;
-				ListIterator<TreeNode> iter = t.children.listIterator();
-				while(iter.hasNext()){
-					// remove all children:
-					next = iter.next();
-					t.states.putAll(next.states);
-					this.nodelist.remove(next);
-					iter.remove();
-				}
+				t.states = getSubtreeStatesAndDelete(t)
 				int newNumber = 2*this.nodelist.indexOf(t)+1; // return true
 				this.number = (number < newNumber ? number : newNumber);
 			}
@@ -114,6 +105,19 @@ public class DeterminizationTree {
 			}
 		}
         return true;
+	}
+	// returns all states in this subtree
+	private Map<String, BuchiState> getSubtreeStatesAndDelete(TreeNode node){
+		Map<String, BuchiState> toRet = node.states;
+		TreeNode child;
+		ListIterator<TreeNode> iter = t.children.listIterator();
+		while(iter.hasNext()){
+			// remove all children:
+			next = iter.next();
+			toRet.putAll(getSubtreeStatesAndDelete(next));
+			this.nodelist.remove(next);
+			iter.remove();
+		}
 	}
 	
 	/**
