@@ -11,7 +11,7 @@ import java.io.IOException;
  * It includes a method to construct an automaton from a graphviz graph.
  */
 class Buchi {
-    Map<String, BuchiState> states = new HashMap<>(); // This is a map because set does not have a get method
+    Map<String, BuchiState> states = new LinkedHashMap<>(); // This is a map because set does not have a get method
 
     /**
      * Interprets a graphviz graph into an automaton.

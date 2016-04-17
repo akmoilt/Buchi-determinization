@@ -134,12 +134,13 @@ public class DeterminizationTree {
 	 * @return Array representing tree shape
 	 */
 	public int[] getTreeArray(){
-		int[] toRet = new int[this.nodelist.size()-1];
-        if (toRet.length == 0) {
-            return new int[]{0};
-        }
-		for(int i = 0; i < this.nodelist.size()-1; i++){
-			toRet[i] = this.nodelist.indexOf(this.nodelist.get(i+1).parent);
+		int[] toRet = new int[this.nodelist.size()];
+		for(int i = 0; i < this.nodelist.size(); i++){
+            int index = this.nodelist.indexOf(this.nodelist.get(i).parent); 
+            if (index < 0) {
+                index = 0;
+            }
+			toRet[i] = index;
 		}
         return toRet;
 	}
