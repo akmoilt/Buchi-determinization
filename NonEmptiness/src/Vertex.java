@@ -6,9 +6,9 @@ import java.util.*;
 class Vertex
 {
     final Set<Edge> edges;
-    final Optional<Condenser> contraction;
+    final Condenser contraction;
 
-    public Vertex(Set<Edge> edges, Optional<Condenser> contraction) {
+    public Vertex(Set<Edge> edges, Condenser contraction) {
         this.edges = edges;
         this.contraction = contraction;
     }

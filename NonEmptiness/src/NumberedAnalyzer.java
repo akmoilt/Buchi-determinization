@@ -13,7 +13,7 @@ public class NumberedAnalyzer {
         numberedGraph = new Condenser();
         for (NumberedState state : numbered.states.values()) {
             Set<Edge> edges = state.transitions.values().stream().map(nt -> new Edge(nt.id, nt.transitionNumber)).collect(Collectors.toSet());
-            Vertex vertex = new Vertex(edges, Optional.empty());
+            Vertex vertex = new Vertex(edges, new Condenser());
             numberedGraph.vertices.put(state.id, vertex);
         }
     }
@@ -27,6 +27,16 @@ public class NumberedAnalyzer {
      * Taken from: http://www.cs.huji.ac.il/~ornak/publications/fossacs01.pdf
      */
     public boolean solve(Condenser g, int startNumber, int endNumber) {
+        if (endNumber < startNumber) {
+            return false;
+        }
+
+        int mid = (int)Math.ceil((startNumber + endNumber) / 2.0);
+        // Filter out all the edges with number less than mid
+        // TODO parity automata are numbered on the vertices, does this change the algorithm?
+        Condenser Gmid = g.cutoff(mid);
+
+        // TODO remove this return, it's just for compilation
         return true;
     }
 
