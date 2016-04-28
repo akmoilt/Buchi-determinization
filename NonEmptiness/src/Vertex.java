@@ -40,4 +40,11 @@ class Vertex
         allEdges.addAll(contraction.getEdges());
         return allEdges;
     }
+
+    /**
+     * Checks if the MSCC containing this vertex is not trivial
+     */
+    public boolean inCycle() {
+        return parent.isPresent();
+    }
 }

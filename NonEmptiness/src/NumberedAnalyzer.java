@@ -39,14 +39,17 @@ public class NumberedAnalyzer {
         Condenser Gmid = g.cutoff(mid);
         Condenser GmidCondensation = Gmid.condensation();
         if (mid % 2 == 0) {
-            if (GmidCondensation.getEdges().stream().anyMatch(e -> e.number == mid && e.source.parent.isPresent())) {
+            if (GmidCondensation.getEdges().stream().anyMatch(e -> e.number == mid && e.inCycle())) {
                 // there  is an edge numbered mid in a non-trivial MSCC
                 return true;
             }
         }
 
-        // TODO remove this return, it's just for compilation
-        return true;
+        // We search for a witness in {mid+1, ..., endNumber}
+        if (solve(GmidCondensation.stepDown().cutoff(mid+1), mid+1, endNumber)) {
+            return true;
+        }
+        return solve(GmidCondensation.stepUp(), startNumber, mid-1);
     }
 
     public static void main(String[] args) {

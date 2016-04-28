@@ -9,4 +9,12 @@ class Edge
         this.number = number;
         this.source = source;
     }
+
+    /**
+     * Checks if this edge belongs to a cycle.
+     */
+    public boolean inCycle() {
+        // TODO
+        return true;
+    }
 }

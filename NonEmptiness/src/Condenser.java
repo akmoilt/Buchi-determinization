@@ -18,6 +18,28 @@ class Condenser
     }
 
     /**
+     * Removes all top-level vertices and nodes, brings up their contracted graphs.
+     */
+    public Condenser stepDown() {
+        Condenser ret = new Condenser();
+        for (Vertex vertex : vertices.values()) {
+            ret.vertices.putAll(vertex.contraction.vertices);
+        }
+        return ret;
+    }
+
+    /**
+     * Removes all contractions from vertices -- keeps only the top level.
+     */
+    public Condenser stepUp() {
+        Condenser ret = new Condenser();
+        for (Vertex vertex : vertices.values()) {
+            vertex.contraction.vertices.clear();
+        }
+        return ret;
+    }
+
+    /**
      * Returns a new condenser with all edges with a number less than cutoff removed.
      */
     public Condenser cutoff(int cutoff) {
