@@ -12,8 +12,10 @@ public class NumberedAnalyzer {
     {
         numberedGraph = new Condenser();
         for (NumberedState state : numbered.states.values()) {
-            Set<Edge> edges = state.transitions.values().stream().map(nt -> new Edge(nt.id, nt.transitionNumber)).collect(Collectors.toSet());
-            Vertex vertex = new Vertex(edges, new Condenser());
+            Vertex vertex = new Vertex(new HashSet<>(), new Condenser(), Optional.empty());
+            for (NumberedTransition transition : state.transitions.values()) {
+                vertex.addEdge(transition.id, transition.transitionNumber);
+            }
             numberedGraph.vertices.put(state.id, vertex);
         }
     }
@@ -35,6 +37,13 @@ public class NumberedAnalyzer {
         // Filter out all the edges with number less than mid
         // TODO parity automata are numbered on the vertices, does this change the algorithm?
         Condenser Gmid = g.cutoff(mid);
+        Condenser GmidCondensation = Gmid.condensation();
+        if (mid % 2 == 0) {
+            if (GmidCondensation.getEdges().stream().anyMatch(e -> e.number == mid && e.source.parent.isPresent())) {
+                // there  is an edge numbered mid in a non-trivial MSCC
+                return true;
+            }
+        }
 
         // TODO remove this return, it's just for compilation
         return true;

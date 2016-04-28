@@ -10,6 +10,14 @@ class Condenser
     final Map<String, Vertex> vertices = new HashMap<>();
 
     /**
+     * Contracts every maximal strongly-connected component into a single vertex.
+     */
+    public Condenser condensation() {
+        // TODO
+        return this;
+    }
+
+    /**
      * Returns a new condenser with all edges with a number less than cutoff removed.
      */
     public Condenser cutoff(int cutoff) {
@@ -19,19 +27,19 @@ class Condenser
         for (Map.Entry<String, Vertex> vertEntry : vertices.entrySet()) {
             Vertex vertex = vertEntry.getValue();
             String id = vertEntry.getKey();
-            Set<Edge> edges = new HashSet<>();
+            Vertex newVert = new Vertex(new HashSet<>(), vertex.contraction.cutoff(cutoff), Optional.of(res));
             for (Edge edge : vertex.edges) {
                 // Filter out edges
                 if (edge.number >= cutoff) {
-                    edges.add(edge);
+                    newVert.addEdge(edge.id, edge.number);
                     // We also want to keep any vertices with incoming edges
                     vertsToKeep.add(edge.id);
                 }
             }
-            res.vertices.put(id, new Vertex(edges, vertex.contraction.cutoff(cutoff)));
+            res.vertices.put(id, newVert);
             
             // We want to keep this vertex if it has outgoing edges
-            if (!edges.isEmpty()) {
+            if (!newVert.edges.isEmpty()) {
                 vertsToKeep.add(id);
             }
         }
@@ -40,6 +48,13 @@ class Condenser
         res.vertices.keySet().retainAll(vertsToKeep);
 
         return res;
+    }
+
+    /**
+     * Returns a set of all edges in the graph (including contractions)
+     */
+    public Set<Edge> getEdges() {
+        return vertices.values().stream().flatMap(e -> e.getAllEdges().stream()).collect(Collectors.toSet());
     }
 
     /**
