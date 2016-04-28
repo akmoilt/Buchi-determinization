@@ -9,7 +9,7 @@ import java.io.IOException;
  * Represents a deterministic numbered automaton (DNA).
  */
 class Numbered {
-    Map<String, NumberedState> states;
+    final Map<String, NumberedState> states = new HashMap<>();
 
     /**
      * Constructs an automaton from graphviz format.
@@ -24,8 +24,8 @@ class Numbered {
             for (String line : (Iterable<String>)reader.lines()::iterator) {
                 Matcher stateMatcher = statePattern.matcher(line);
                 if (stateMatcher.matches()) {
-                    states.put(stateMatcher.group("id"), new NumberedState(stateMatcher.group("id"),
-                                stateMatcher.group("id").equals("Q0")));
+                    String id = stateMatcher.group("id");
+                    states.put(id, new NumberedState(id, id.equals("Q0")));
                     continue;
                 }
                 Matcher transitionMatcher = transitionPattern.matcher(line);
