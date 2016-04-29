@@ -55,6 +55,6 @@ public class NumberedAnalyzer {
     public static void main(String[] args) {
         Numbered numbered = new Numbered(System.in);
         NumberedAnalyzer analyzer = new NumberedAnalyzer(numbered);
-        System.out.println(!analyzer.isEmpty());
+        System.out.println("This automaton is nonempty: " + !analyzer.isEmpty());
     }
 }

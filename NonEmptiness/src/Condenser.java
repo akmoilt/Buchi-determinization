@@ -79,35 +79,33 @@ class Condenser
      * TODO union-find
      */
     public Condenser contract(Set<Set<Vertex>> components) {
-        Map<Vertex, Vertex> roots = new HashMap<>();
-        Map<Vertex, Set<Vertex>> componentMap = new HashMap<>();
+        Map<String, String> roots = new HashMap<>();
         // Map each vertex to an arbitrary root of its component
-        // Additionally, map each vertex to its component
+        // TODO move this into dfs to do everything in one pass
         for (Set<Vertex> component : components) {
             Vertex root = component.iterator().next();
             for (Vertex vertex : component) {
-                roots.put(vertex, root);
-                componentMap.put(vertex, component);
+                roots.put(vertex.id, root.id);
             }
         }
 
         Condenser contraction = new Condenser();
         for (Set<Vertex> component : components) {
-            Vertex root = roots.get(component.iterator().next());
+            Vertex root = getVert(roots.get(component.iterator().next().id));
             Vertex newRoot = new Vertex(root.id,
-                    root.edges.stream().map(e -> new Edge(root.id, roots.get(e.to).id, e.number)).collect(Collectors.toSet()),
+                    root.edges.stream().map(e -> new Edge(root.id, roots.get(e.to), e.number)).collect(Collectors.toSet()),
                     new Condenser(), Optional.empty());
             contraction.addVert(newRoot);
             for (Vertex vertex : component) {
                 Vertex newVert = new Vertex(root.id + "." + vertex.id, new HashSet<>(), new Condenser(), Optional.of(contraction));
                 for (Edge edge : vertex.edges) {
-                    if (getVert(edge.to) == root) {
+                    if (getVert(edge.to).equals(root.id)) {
                         // Edge inside the component
                         newVert.addEdge(root.id + "." + edge.to, edge.number);
                     }
                     else {
                         // Edge goes to vertex outside component
-                        root.addEdge(roots.get(edge.to).id, edge.number);
+                        root.addEdge(roots.get(edge.to), edge.number);
                     }
                 }
                 newRoot.contraction.addVert(newVert);
