@@ -1,13 +1,13 @@
 class Edge
 {
-    final String id;
+    final String from;
+    final String to;
     final int number;
-    final Vertex source;
 
-    public Edge(String id, int number, Vertex source) {
-        this.id = id;
+    public Edge(String from, String to, int number) {
+        this.from = from;
+        this.to = to;
         this.number = number;
-        this.source = source;
     }
 
     /**
@@ -16,5 +16,9 @@ class Edge
     public boolean inCycle() {
         // TODO
         return true;
+    }
+
+    public String toString() {
+        return from + " --" + number + "-> " + to;
     }
 }

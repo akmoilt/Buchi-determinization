@@ -9,12 +9,112 @@ class Condenser
 {
     final Map<String, Vertex> vertices = new HashMap<>();
 
+    public Vertex getVert(String id) {
+        return vertices.get(id);
+    }
+
+    public Vertex addVert(Vertex vertex) {
+        vertices.put(vertex.id, vertex);
+        return vertex;
+    }
+
     /**
      * Contracts every maximal strongly-connected component into a single vertex.
+     * Uses the path-based algorithm: https://en.wikipedia.org/wiki/Path-based_strong_component_algorithm
      */
     public Condenser condensation() {
-        // TODO
-        return this;
+        Stack<Vertex> stack = new Stack<>();
+        Stack<Integer> boundaries = new Stack<>();
+        Map<Vertex, Integer> preorderNums = new HashMap<>();
+        Set<Vertex> identified = new HashSet<>();
+        Set<Set<Vertex>> components = new HashSet<>();
+        
+        for (Vertex vertex : vertices.values()) {
+            if (!preorderNums.containsKey(vertex)) {
+                components.addAll(dfs(vertex, stack, boundaries, preorderNums, identified));
+            }
+        }
+
+        return this.contract(components);
+    }
+
+    /**
+     * Recursive helper function to find SCCs using DFS.
+     */
+    private Set<Set<Vertex>> dfs(Vertex vertex, Stack<Vertex> stack, Stack<Integer> boundaries, Map<Vertex, Integer>preorderNums, Set<Vertex> identified) {
+        preorderNums.put(vertex, stack.size());
+        stack.push(vertex);
+        boundaries.push(preorderNums.get(vertex));
+        Set<Set<Vertex>> components = new HashSet<>();
+
+        for (Edge edge : vertex.edges) {
+            Vertex nextVert = getVert(edge.to);
+            if (!preorderNums.containsKey(nextVert)) {
+                components.addAll(dfs(nextVert, stack, boundaries, preorderNums, identified));
+            }
+            else if (!identified.contains(nextVert)) {
+                while (preorderNums.get(nextVert) < boundaries.peek()) {
+                    boundaries.pop();
+                }
+            }
+
+            if (boundaries.peek() == preorderNums.get(vertex)) {
+                boundaries.pop();
+                Set<Vertex> scc = new HashSet<>();
+                Vertex vertToAdd;
+                while (preorderNums.get((vertToAdd = stack.pop())) != preorderNums.get(vertex)) {
+                    scc.add(vertToAdd);
+                }
+                scc.add(vertToAdd);
+                identified.addAll(scc);
+                components.add(scc);
+            }
+        }
+
+        return components;
+    }
+
+    /**
+     * Returns a new graph where every set of vertices in components is contracted to a single vertex.
+     * TODO union-find
+     */
+    public Condenser contract(Set<Set<Vertex>> components) {
+        Map<Vertex, Vertex> roots = new HashMap<>();
+        Map<Vertex, Set<Vertex>> componentMap = new HashMap<>();
+        // Map each vertex to an arbitrary root of its component
+        // Additionally, map each vertex to its component
+        for (Set<Vertex> component : components) {
+            Vertex root = component.iterator().next();
+            for (Vertex vertex : component) {
+                roots.put(vertex, root);
+                componentMap.put(vertex, component);
+            }
+        }
+
+        Condenser contraction = new Condenser();
+        for (Set<Vertex> component : components) {
+            Vertex root = roots.get(component.iterator().next());
+            Vertex newRoot = new Vertex(root.id,
+                    root.edges.stream().map(e -> new Edge(root.id, roots.get(e.to).id, e.number)).collect(Collectors.toSet()),
+                    new Condenser(), Optional.empty());
+            contraction.addVert(newRoot);
+            for (Vertex vertex : component) {
+                Vertex newVert = new Vertex(root.id + "." + vertex.id, new HashSet<>(), new Condenser(), Optional.of(contraction));
+                for (Edge edge : vertex.edges) {
+                    if (getVert(edge.to) == root) {
+                        // Edge inside the component
+                        newVert.addEdge(root.id + "." + edge.to, edge.number);
+                    }
+                    else {
+                        // Edge goes to vertex outside component
+                        root.addEdge(roots.get(edge.to).id, edge.number);
+                    }
+                }
+                newRoot.contraction.addVert(newVert);
+            }
+        }
+
+        return contraction;
     }
 
     /**
@@ -49,16 +149,16 @@ class Condenser
         for (Map.Entry<String, Vertex> vertEntry : vertices.entrySet()) {
             Vertex vertex = vertEntry.getValue();
             String id = vertEntry.getKey();
-            Vertex newVert = new Vertex(new HashSet<>(), vertex.contraction.cutoff(cutoff), Optional.of(res));
+            Vertex newVert = new Vertex(id, new HashSet<>(), vertex.contraction.cutoff(cutoff), Optional.of(res));
             for (Edge edge : vertex.edges) {
                 // Filter out edges
                 if (edge.number >= cutoff) {
-                    newVert.addEdge(edge.id, edge.number);
+                    newVert.addEdge(edge.to, edge.number);
                     // We also want to keep any vertices with incoming edges
-                    vertsToKeep.add(edge.id);
+                    vertsToKeep.add(edge.to);
                 }
             }
-            res.vertices.put(id, newVert);
+            res.addVert(newVert);
             
             // We want to keep this vertex if it has outgoing edges
             if (!newVert.edges.isEmpty()) {
@@ -70,6 +170,10 @@ class Condenser
         res.vertices.keySet().retainAll(vertsToKeep);
 
         return res;
+    }
+
+    public String toString() {
+        return vertices.toString();
     }
 
     /**

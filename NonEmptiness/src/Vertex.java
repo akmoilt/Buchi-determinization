@@ -6,17 +6,20 @@ import java.util.stream.*;
  */
 class Vertex
 {
+    final String id;
     final Set<Edge> edges;
     final Condenser contraction;
     final Optional<Condenser> parent;
 
-    public Vertex(Set<Edge> edges, Condenser contraction, Optional<Condenser> parent) {
+    public Vertex(String id, Set<Edge> edges, Condenser contraction, Optional<Condenser> parent) {
+        this.id = id;
         this.edges = edges;
         this.contraction = contraction;
         this.parent = parent;
     }
 
-    public Vertex() {
+    public Vertex(String id) {
+        this.id = id;
         this.edges = new HashSet<>();
         this.contraction = new Condenser();
         this.parent = Optional.empty();
@@ -25,8 +28,8 @@ class Vertex
     /**
      * Adds a new outgoing edge.
      */
-    public Edge addEdge(String id, int number) {
-        Edge newEdge = new Edge(id, number, this);
+    public Edge addEdge(String to, int number) {
+        Edge newEdge = new Edge(this.id, to, number);
         edges.add(newEdge);
         return newEdge;
     }
@@ -46,5 +49,9 @@ class Vertex
      */
     public boolean inCycle() {
         return parent.isPresent();
+    }
+
+    public String toString() {
+        return id + " : " + edges;
     }
 }
