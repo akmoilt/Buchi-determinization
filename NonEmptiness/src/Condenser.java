@@ -23,8 +23,8 @@ class Condenser
      * Uses the path-based algorithm: https://en.wikipedia.org/wiki/Path-based_strong_component_algorithm
      */
     public Condenser condensation() {
-        Stack<Vertex> stack = new Stack<>();
-        Stack<Integer> boundaries = new Stack<>();
+        Deque<Vertex> stack = new ArrayDeque<>();
+        Deque<Integer> boundaries = new ArrayDeque<>();
         Map<Vertex, Integer> preorderNums = new HashMap<>();
         Set<Vertex> identified = new HashSet<>();
         Set<Set<Vertex>> components = new HashSet<>();
@@ -41,7 +41,7 @@ class Condenser
     /**
      * Recursive helper function to find SCCs using DFS.
      */
-    private Set<Set<Vertex>> dfs(Vertex vertex, Stack<Vertex> stack, Stack<Integer> boundaries, Map<Vertex, Integer>preorderNums, Set<Vertex> identified) {
+    private Set<Set<Vertex>> dfs(Vertex vertex, Deque<Vertex> stack, Deque<Integer> boundaries, Map<Vertex, Integer>preorderNums, Set<Vertex> identified) {
         preorderNums.put(vertex, stack.size());
         stack.push(vertex);
         boundaries.push(preorderNums.get(vertex));
@@ -62,7 +62,7 @@ class Condenser
                 boundaries.pop();
                 Set<Vertex> scc = new HashSet<>();
                 Vertex vertToAdd;
-                while (preorderNums.get((vertToAdd = stack.pop())) != preorderNums.get(vertex)) {
+                while ((vertToAdd = stack.pop()) != vertex) {
                     scc.add(vertToAdd);
                 }
                 scc.add(vertToAdd);
@@ -98,7 +98,8 @@ class Condenser
             contraction.addVert(newRoot);
             for (Vertex vertex : component) {
                 Vertex newVert = new Vertex(root.id + "." + vertex.id, new HashSet<>(), new Condenser(), Optional.of(contraction));
-                for (Edge edge : vertex.edges) {
+                // We need to copy the edges so that when we reach the root and add edges to it, we won't modify the iterator
+                for (Edge edge : new HashSet<>(vertex.edges)) {
                     if (getVert(edge.to).equals(root.id)) {
                         // Edge inside the component
                         newVert.addEdge(root.id + "." + edge.to, edge.number);
@@ -182,22 +183,15 @@ class Condenser
     }
 
     /**
-     * Returns the maximum number of an edge in the graph, or that number + 1, whichever is even.
+     * Returns the maximum number of an edge in the graph.
      * Does not recurse into contractions
      */
-    public int get2k() {
+    public int getMaxNum() {
         Optional<Integer> max = vertices.values().stream().flatMap(v -> v.edges.stream().map(e -> e.number))
             .max(Comparator.naturalOrder());
         if (!max.isPresent()) {
             return 0;
         }
-
-        int maxNum = max.get();
-        if (maxNum % 2 == 0) {
-            return maxNum;
-        }
-        else {
-            return maxNum + 1;
-        }
+        return max.get();
     }
 }

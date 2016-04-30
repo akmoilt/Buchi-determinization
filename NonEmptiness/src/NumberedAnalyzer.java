@@ -22,10 +22,11 @@ public class NumberedAnalyzer {
 	
     public boolean isEmpty()
     {
-        return solve(numberedGraph, 1, numberedGraph.get2k());
+        return !solve(numberedGraph, 1, numberedGraph.getMaxNum());
     }
 
     /** Recursive function to find witnesses for the even cycle problem.
+     * Returns true if there is a witness, false otherwise.
      * Taken from: http://www.cs.huji.ac.il/~ornak/publications/fossacs01.pdf
      */
     public boolean solve(Condenser g, int startNumber, int endNumber) {
@@ -36,20 +37,20 @@ public class NumberedAnalyzer {
         int mid = (int)Math.ceil((startNumber + endNumber) / 2.0);
         // Filter out all the edges with number less than mid
         // TODO parity automata are numbered on the vertices, does this change the algorithm?
-        Condenser Gmid = g.cutoff(mid);
-        Condenser GmidCondensation = Gmid.condensation();
+        Condenser gMid = g.cutoff(mid);
+        Condenser gMidCondensation = gMid.condensation();
         if (mid % 2 == 0) {
-            if (GmidCondensation.getEdges().stream().anyMatch(e -> e.number == mid && e.inCycle())) {
+            if (gMidCondensation.getEdges().stream().anyMatch(e -> e.number == mid && e.inCycle())) {
                 // there  is an edge numbered mid in a non-trivial MSCC
                 return true;
             }
         }
 
         // We search for a witness in {mid+1, ..., endNumber}
-        if (solve(GmidCondensation.stepDown().cutoff(mid+1), mid+1, endNumber)) {
+        if (solve(gMidCondensation.stepDown().cutoff(mid+1), mid+1, endNumber)) {
             return true;
         }
-        return solve(GmidCondensation.stepUp(), startNumber, mid-1);
+        return solve(gMidCondensation.stepUp(), startNumber, mid-1);
     }
 
     public static void main(String[] args) {
