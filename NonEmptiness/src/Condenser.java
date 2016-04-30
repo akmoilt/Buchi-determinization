@@ -96,20 +96,21 @@ class Condenser
                     root.edges.stream().map(e -> new Edge(root.id, roots.get(e.to), e.number)).collect(Collectors.toSet()),
                     new Condenser(), Optional.empty());
             contraction.addVert(newRoot);
-            for (Vertex vertex : component) {
-                Vertex newVert = new Vertex(root.id + "." + vertex.id, new HashSet<>(), new Condenser(), Optional.of(contraction));
-                // We need to copy the edges so that when we reach the root and add edges to it, we won't modify the iterator
-                for (Edge edge : new HashSet<>(vertex.edges)) {
-                    if (getVert(edge.to).equals(root.id)) {
-                        // Edge inside the component
-                        newVert.addEdge(root.id + "." + edge.to, edge.number);
+            if (component.size() != 1) {
+                for (Vertex vertex : component) {
+                    Vertex newVert = new Vertex(root.id + "." + vertex.id, new HashSet<>(), new Condenser(), Optional.of(contraction));
+                    for (Edge edge : vertex.edges) {
+                        if (getVert(edge.to).equals(root.id)) {
+                            // Edge inside the component
+                            newVert.addEdge(root.id + "." + edge.to, edge.number);
+                        }
+                        else if (vertex != root){
+                            // Edge goes to vertex outside component
+                            root.addEdge(roots.get(edge.to), edge.number);
+                        }
                     }
-                    else {
-                        // Edge goes to vertex outside component
-                        root.addEdge(roots.get(edge.to), edge.number);
-                    }
+                    newRoot.contraction.addVert(newVert);
                 }
-                newRoot.contraction.addVert(newVert);
             }
         }
 
