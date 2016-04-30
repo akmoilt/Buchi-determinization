@@ -20,77 +20,76 @@ class Condenser
 
     /**
      * Contracts every maximal strongly-connected component into a single vertex.
-     * Uses the path-based algorithm: https://en.wikipedia.org/wiki/Path-based_strong_component_algorithm
+     * Uses Kosaraju's algorithm.
      */
     public Condenser condensation() {
+
         Deque<Vertex> stack = new ArrayDeque<>();
-        Deque<Integer> boundaries = new ArrayDeque<>();
-        Map<Vertex, Integer> preorderNums = new HashMap<>();
-        Set<Vertex> identified = new HashSet<>();
-        Set<Set<Vertex>> components = new HashSet<>();
-        
+        Condenser transpose = this.transpose();
+        Map<String, String> roots = new HashMap<>();
+        Map<String, Set<Vertex>> components = new HashMap<>();
         for (Vertex vertex : vertices.values()) {
-            if (!preorderNums.containsKey(vertex)) {
-                components.addAll(dfs(vertex, stack, boundaries, preorderNums, identified));
-            }
+            visit(vertex, stack, roots);
         }
 
-        return this.contract(components);
+        for (Vertex vertex : stack) {
+            assign(vertex, vertex, roots, components, transpose);
+        }
+
+        return contract(components, roots);
     }
 
     /**
-     * Recursive helper function to find SCCs using DFS.
+     * Helper function for condensation, does dfs and adds to stack in post-order.
      */
-    private Set<Set<Vertex>> dfs(Vertex vertex, Deque<Vertex> stack, Deque<Integer> boundaries, Map<Vertex, Integer>preorderNums, Set<Vertex> identified) {
-        preorderNums.put(vertex, stack.size());
-        stack.push(vertex);
-        boundaries.push(preorderNums.get(vertex));
-        Set<Set<Vertex>> components = new HashSet<>();
-
-        for (Edge edge : vertex.edges) {
-            Vertex nextVert = getVert(edge.to);
-            if (!preorderNums.containsKey(nextVert)) {
-                components.addAll(dfs(nextVert, stack, boundaries, preorderNums, identified));
+    private void visit(Vertex vertex, Deque<Vertex> stack, Map<String, String> roots) {
+        if (!roots.containsKey(vertex.id)) {
+            roots.put(vertex.id, null);
+            for (Edge edge : vertex.edges) {
+                visit(getVert(edge.to), stack, roots);
             }
-            else if (!identified.contains(nextVert)) {
-                while (preorderNums.get(nextVert) < boundaries.peek()) {
-                    boundaries.pop();
-                }
-            }
+            stack.push(vertex);
+        }
+    }
 
-            if (boundaries.peek() == preorderNums.get(vertex)) {
-                boundaries.pop();
-                Set<Vertex> scc = new HashSet<>();
-                Vertex vertToAdd;
-                while ((vertToAdd = stack.pop()) != vertex) {
-                    scc.add(vertToAdd);
-                }
-                scc.add(vertToAdd);
-                identified.addAll(scc);
-                components.add(scc);
+    /**
+     * Helper function for condensation, does dfs over transpose and creates the components.
+     */
+    private void assign(Vertex vertex, Vertex root, Map<String, String> roots, Map<String, Set<Vertex>> components, Condenser transpose) {
+        if (roots.get(vertex.id) == null) {
+            roots.put(vertex.id, root.id);
+            if (!components.containsKey(root.id)) {
+                components.put(root.id, new HashSet<>());
+            }
+            components.get(root.id).add(vertex);
+            for (Edge inEdge : transpose.getVert(vertex.id).edges) {
+                assign(getVert(inEdge.to), root, roots, components, transpose);
             }
         }
+    }
 
-        return components;
+    /**
+     * Returns a transposition of this graph (every edge is reversed).
+     */
+    public Condenser transpose() {
+        Condenser transpose = new Condenser();
+        vertices.keySet().stream().forEach(id -> transpose.addVert(new Vertex(id)));
+        for (Vertex vertex : vertices.values()) {
+            for (Edge edge : vertex.edges) {
+                transpose.getVert(edge.to).addEdge(edge.from, edge.number);
+            }
+        }
+        return transpose;
     }
 
     /**
      * Returns a new graph where every set of vertices in components is contracted to a single vertex.
      * TODO union-find
      */
-    public Condenser contract(Set<Set<Vertex>> components) {
-        Map<String, String> roots = new HashMap<>();
-        // Map each vertex to an arbitrary root of its component
-        // TODO move this into dfs to do everything in one pass
-        for (Set<Vertex> component : components) {
-            Vertex root = component.iterator().next();
-            for (Vertex vertex : component) {
-                roots.put(vertex.id, root.id);
-            }
-        }
-
+    public Condenser contract(Map<String, Set<Vertex>> components, Map<String, String> roots) {
         Condenser contraction = new Condenser();
-        for (Set<Vertex> component : components) {
+
+        for (Set<Vertex> component : components.values()) {
             Vertex root = getVert(roots.get(component.iterator().next().id));
             Vertex newRoot = new Vertex(root.id,
                     root.edges.stream().map(e -> new Edge(root.id, roots.get(e.to), e.number)).collect(Collectors.toSet()),
@@ -181,6 +180,10 @@ class Condenser
      */
     public Set<Edge> getEdges() {
         return vertices.values().stream().flatMap(e -> e.getAllEdges().stream()).collect(Collectors.toSet());
+    }
+
+    public boolean isEmpty() {
+        return vertices.size() == 0;
     }
 
     /**

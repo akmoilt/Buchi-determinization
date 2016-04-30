@@ -52,6 +52,6 @@ class Vertex
     }
 
     public String toString() {
-        return id + ":" + edges + ";" + contraction;
+        return id + ":" + edges + (contraction.isEmpty() ? "" : ";" + contraction);
     }
 }
