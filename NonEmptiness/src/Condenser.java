@@ -23,7 +23,6 @@ class Condenser
      * Uses Kosaraju's algorithm.
      */
     public Condenser condensation() {
-
         Deque<Vertex> stack = new ArrayDeque<>();
         Condenser transpose = this.transpose();
         Map<String, String> roots = new HashMap<>();

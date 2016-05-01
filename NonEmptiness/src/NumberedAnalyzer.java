@@ -36,10 +36,9 @@ public class NumberedAnalyzer {
 
         int mid = (int)Math.ceil((startNumber + endNumber) / 2.0);
         // Filter out all the edges with number less than mid
-        // TODO parity automata are numbered on the vertices, does this change the algorithm?
         Condenser gMid = g.cutoff(mid);
         Condenser gMidCondensation = gMid.condensation();
-        if (mid % 2 == 0) {
+        if (mid % 2 != 0) {
             if (gMidCondensation.getEdges().stream().anyMatch(e -> e.number == mid && e.inCycle())) {
                 // there  is an edge numbered mid in a non-trivial MSCC
                 return true;
