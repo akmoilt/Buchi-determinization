@@ -10,14 +10,6 @@ class Edge
         this.number = number;
     }
 
-    /**
-     * Checks if this edge belongs to a cycle.
-     */
-    public boolean inCycle() {
-        // TODO
-        return true;
-    }
-
     public String toString() {
         return from + " --" + number + "-> " + to;
     }

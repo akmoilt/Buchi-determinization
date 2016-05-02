@@ -12,7 +12,7 @@ public class NumberedAnalyzer {
     {
         numberedGraph = new Condenser();
         for (NumberedState state : numbered.states.values()) {
-            Vertex vertex = new Vertex(state.id, new HashSet<>(), new Condenser(), Optional.empty());
+            Vertex vertex = new Vertex(state.id, new HashSet<>(), new Condenser());
             for (NumberedTransition transition : state.transitions.values()) {
                 vertex.addEdge(transition.id, transition.transitionNumber);
             }

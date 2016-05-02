@@ -92,11 +92,11 @@ class Condenser
             Vertex root = getVert(roots.get(component.iterator().next().id));
             Vertex newRoot = new Vertex(root.id,
                     root.edges.stream().map(e -> new Edge(root.id, roots.get(e.to), e.number)).collect(Collectors.toSet()),
-                    new Condenser(), Optional.empty());
+                    new Condenser());
             contraction.addVert(newRoot);
             if (component.size() != 1) {
                 for (Vertex vertex : component) {
-                    Vertex newVert = new Vertex(root.id + "." + vertex.id, new HashSet<>(), new Condenser(), Optional.of(contraction));
+                    Vertex newVert = new Vertex(root.id + "." + vertex.id, new HashSet<>(), new Condenser());
                     for (Edge edge : vertex.edges) {
                         if (getVert(edge.to).equals(root.id)) {
                             // Edge inside the component
@@ -147,7 +147,7 @@ class Condenser
         for (Map.Entry<String, Vertex> vertEntry : vertices.entrySet()) {
             Vertex vertex = vertEntry.getValue();
             String id = vertEntry.getKey();
-            Vertex newVert = new Vertex(id, new HashSet<>(), vertex.contraction.cutoff(cutoff), Optional.of(res));
+            Vertex newVert = new Vertex(id, new HashSet<>(), vertex.contraction.cutoff(cutoff));
             for (Edge edge : vertex.edges) {
                 // Filter out edges
                 if (edge.number >= cutoff) {
