@@ -157,7 +157,7 @@ class Condenser
                 }
             }
             res.addVert(newVert);
-            
+
             // We want to keep this vertex if it has outgoing edges
             if (!newVert.edges.isEmpty()) {
                 vertsToKeep.add(id);
@@ -172,13 +172,6 @@ class Condenser
 
     public String toString() {
         return vertices.toString();
-    }
-
-    /**
-     * Returns a set of all edges in the graph (including contractions)
-     */
-    public Set<Edge> getEdges() {
-        return vertices.values().stream().flatMap(e -> e.getAllEdges().stream()).collect(Collectors.toSet());
     }
 
     public boolean isEmpty() {

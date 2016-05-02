@@ -35,16 +35,6 @@ class Vertex
     }
 
     /**
-     * Returns set of all edges, including those contained in the contraction
-     */
-    public Set<Edge> getAllEdges() {
-        // Make copy of outgoing edges
-        Set<Edge> allEdges = new HashSet<>(edges);
-        allEdges.addAll(contraction.getEdges());
-        return allEdges;
-    }
-
-    /**
      * Checks if the MSCC containing this vertex is not trivial
      */
     public boolean inCycle() {
