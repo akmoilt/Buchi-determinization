@@ -39,15 +39,11 @@ public class NumberedAnalyzer {
         Condenser gMid = g.cutoff(mid);
         Condenser gMidCondensation = gMid.condensation();
         if (mid % 2 != 0) {
-            for (Vertex component : gMidCondensation.vertices.values()) {
-                for (Vertex vertex : component.contraction.vertices.values()) {
-                    for (Edge edge : vertex.edges) {
-                        if (edge.number == mid) {
-                            // We found an edge in a non-trivial MSCC numbered mid
-                            return true;
-                        }
-                    }
-                }
+            if (gMidCondensation.vertices.values().stream()
+                    .flatMap(v -> v.contraction.vertices.values().stream())
+                    .flatMap(v -> v.edges.stream())
+                    .anyMatch(e -> e.number == mid)) {
+                return true;
             }
         }
 
