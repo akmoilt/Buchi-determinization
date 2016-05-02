@@ -90,21 +90,19 @@ class Condenser
 
         for (Set<Vertex> component : components.values()) {
             Vertex root = getVert(roots.get(component.iterator().next().id));
-            Vertex newRoot = new Vertex(root.id,
-                    root.edges.stream().map(e -> new Edge(root.id, roots.get(e.to), e.number)).collect(Collectors.toSet()),
-                    new Condenser());
+            Vertex newRoot = new Vertex(root.id, new HashSet<>(), new Condenser());
             contraction.addVert(newRoot);
             if (component.size() != 1) {
                 for (Vertex vertex : component) {
                     Vertex newVert = new Vertex(root.id + "." + vertex.id, new HashSet<>(), new Condenser());
                     for (Edge edge : vertex.edges) {
-                        if (getVert(edge.to).equals(root.id)) {
+                        if (roots.get(getVert(edge.to).id).equals(root.id)) {
                             // Edge inside the component
                             newVert.addEdge(root.id + "." + edge.to, edge.number);
                         }
-                        else if (vertex != root){
+                        else if (!vertex.id.equals(root.id)) {
                             // Edge goes to vertex outside component
-                            root.addEdge(roots.get(edge.to), edge.number);
+                            newRoot.addEdge(roots.get(edge.to), edge.number);
                         }
                     }
                     newRoot.contraction.addVert(newVert);
