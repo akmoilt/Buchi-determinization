@@ -23,19 +23,22 @@ class Condenser
      * Uses Kosaraju's algorithm.
      */
     public Condenser condensation() {
+        return contract(getComponents());
+    }
+
+    public Components getComponents() {
         Deque<Vertex> stack = new ArrayDeque<>();
         Condenser transpose = this.transpose();
-        Map<String, String> roots = new HashMap<>();
-        Map<String, Set<Vertex>> components = new HashMap<>();
+        Components components = new Components();
         for (Vertex vertex : vertices.values()) {
-            visit(vertex, stack, roots);
+            visit(vertex, stack, components.roots);
         }
 
         for (Vertex vertex : stack) {
-            assign(vertex, vertex, roots, components, transpose);
+            assign(vertex, vertex, components, transpose);
         }
 
-        return contract(components, roots);
+        return components;
     }
 
     /**
@@ -54,15 +57,15 @@ class Condenser
     /**
      * Helper function for condensation, does dfs over transpose and creates the components.
      */
-    private void assign(Vertex vertex, Vertex root, Map<String, String> roots, Map<String, Set<Vertex>> components, Condenser transpose) {
-        if (roots.get(vertex.id) == null) {
-            roots.put(vertex.id, root.id);
-            if (!components.containsKey(root.id)) {
-                components.put(root.id, new HashSet<>());
+    private void assign(Vertex vertex, Vertex root, Components components, Condenser transpose) {
+        if (components.roots.get(vertex.id) == null) {
+            components.roots.put(vertex.id, root.id);
+            if (!components.components.containsKey(root.id)) {
+                components.components.put(root.id, new HashSet<>());
             }
-            components.get(root.id).add(vertex);
+            components.components.get(root.id).add(vertex);
             for (Edge inEdge : transpose.getVert(vertex.id).edges) {
-                assign(getVert(inEdge.to), root, roots, components, transpose);
+                assign(getVert(inEdge.to), root, components, transpose);
             }
         }
     }
@@ -85,29 +88,26 @@ class Condenser
      * Returns a new graph where every set of vertices in components is contracted to a single vertex.
      * TODO union-find
      */
-    public Condenser contract(Map<String, Set<Vertex>> components, Map<String, String> roots) {
+    public Condenser contract(Components components) {
         Condenser contraction = new Condenser();
 
-        for (Set<Vertex> component : components.values()) {
-            Vertex root = getVert(roots.get(component.iterator().next().id));
+        for (Set<Vertex> component : components.components.values()) {
+            Vertex root = getVert(components.roots.get(component.iterator().next().id));
             Vertex newRoot = new Vertex(root.id, new HashSet<>(), new Condenser());
             contraction.addVert(newRoot);
             for (Vertex vertex : component) {
                 Vertex newVert = new Vertex(root.id + "." + vertex.id, new HashSet<>(), new Condenser());
                 for (Edge edge : vertex.edges) {
-                    if (roots.get(getVert(edge.to).id).equals(root.id)) {
+                    if (components.roots.get(getVert(edge.to).id).equals(root.id)) {
                         // Edge inside the component
                         newVert.addEdge(root.id + "." + edge.to, edge.number);
                     }
                     else {
                         // Edge goes to vertex outside component
-                        newRoot.addEdge(roots.get(edge.to), edge.number);
+                        newRoot.addEdge(components.roots.get(edge.to), edge.number);
                     }
                 }
                 newRoot.contraction.addVert(newVert);
-            }
-            if (newRoot.contraction.vertices.size() == 1) {
-                newRoot.contraction.vertices.clear();
             }
         }
 
@@ -126,30 +126,48 @@ class Condenser
     }
 
     /**
-     * Removes all contractions from vertices -- keeps only the top level.
+     * Removes all contractions from vertices -- keeps only the top level, and adds back in any edges numbered less than mid.
      */
-    public Condenser stepUp() {
+    public Condenser stepUp(int mid, Condenser g, Map<String, String> roots) {
         Condenser ret = new Condenser();
         for (Vertex vertex : vertices.values()) {
             vertex.contraction.vertices.clear();
+            ret.addVert(vertex);
         }
+
+        // TODO clean this up
+        for (Vertex vertex : g.vertices.values()) {
+            for (Edge edge : vertex.edges) {
+                if (edge.number < mid) {
+                    String from = roots.getOrDefault(edge.from, edge.from);
+                    String to = roots.getOrDefault(edge.to, edge.to);
+                    if (!to.equals(from)) {
+                        ret.vertices.getOrDefault(from, new Vertex(from)).addEdge(to, edge.number);
+                        if (!ret.vertices.containsKey(to)) {
+                            ret.vertices.put(to, new Vertex(to));
+                        }
+                    }
+                }
+            }
+        }
+
         return ret;
     }
 
     /**
-     * Returns a new condenser with all edges with a number less than cutoff removed.
+     * Returns a new condenser keeping only pedges passed by filter.
      */
-    public Condenser cutoff(int cutoff) {
+    public Condenser filterEdges(EdgeFilter filter) {
         Condenser res = new Condenser();
         Set<String> vertsToKeep = new HashSet<>();
 
         for (Map.Entry<String, Vertex> vertEntry : vertices.entrySet()) {
             Vertex vertex = vertEntry.getValue();
             String id = vertEntry.getKey();
-            Vertex newVert = new Vertex(id, new HashSet<>(), vertex.contraction.cutoff(cutoff));
+            Vertex newVert = new Vertex(id, new HashSet<>(), vertex.contraction.filterEdges(filter));
             for (Edge edge : vertex.edges) {
                 // Filter out edges
-                if (edge.number >= cutoff) {
+                if (filter.filter(edge)) {
                     newVert.addEdge(edge.to, edge.number);
                     // We also want to keep any vertices with incoming edges
                     vertsToKeep.add(edge.to);

@@ -36,8 +36,9 @@ public class NumberedAnalyzer {
 
         int mid = (int)Math.ceil((startNumber + endNumber) / 2.0);
         // Filter out all the edges with number less than mid
-        Condenser gMid = g.cutoff(mid);
-        Condenser gMidCondensation = gMid.condensation();
+        Condenser gMid = g.filterEdges(e -> e.number >= mid);
+        Components components = gMid.getComponents();
+        Condenser gMidCondensation = gMid.contract(components);
         if (mid % 2 != 0) {
             if (gMidCondensation.vertices.values().stream()
                     .flatMap(v -> v.contraction.vertices.values().stream())
@@ -48,15 +49,15 @@ public class NumberedAnalyzer {
         }
 
         // We search for a witness in {mid+1, ..., endNumber}
-        if (solve(gMidCondensation.stepDown().cutoff(mid+1), mid+1, endNumber)) {
+        if (solve(gMidCondensation.stepDown().filterEdges(e -> e.number >= mid+1), mid+1, endNumber)) {
             return true;
         }
-        return solve(gMidCondensation.stepUp(), startNumber, mid-1);
+        return solve(gMidCondensation.stepUp(mid, g, components.roots), startNumber, mid-1);
     }
 
     public static void main(String[] args) {
         Numbered numbered = new Numbered(System.in);
         NumberedAnalyzer analyzer = new NumberedAnalyzer(numbered);
-        System.out.println("This automaton is nonempty: " + !analyzer.isEmpty());
+        System.out.println(analyzer.isEmpty() ? "Empty" : "Nonempty");
     }
 }
