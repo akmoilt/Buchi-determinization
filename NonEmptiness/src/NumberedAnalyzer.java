@@ -54,10 +54,4 @@ public class NumberedAnalyzer {
         }
         return solve(gMidCondensation.stepUp(mid, g, components.roots), startNumber, mid-1);
     }
-
-    public static void main(String[] args) {
-        Numbered numbered = new Numbered(System.in);
-        NumberedAnalyzer analyzer = new NumberedAnalyzer(numbered);
-        System.out.println(analyzer.isEmpty() ? "Empty" : "Nonempty");
-    }
 }
