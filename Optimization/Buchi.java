@@ -60,6 +60,18 @@ class Buchi {
             map(s->s.transitions.keySet())
             .collect(HashSet<Character>::new, Set::addAll, Set::addAll); // Takes the union of the sets
     }
+    
+    /**
+     * Optimizes this automata, cleaning up irrelevant states.
+     */
+    public void cleanup(){
+    	// TODO find SCC's
+    	
+    	// TODO go over SCC's in reverse topological order,
+    	// deleting if possible.
+    	
+    	// TODO update states and transitions
+    }
 
     /**
      * Reads NBA in graphviz format from stdin, prints the resulting DNA, again in graphviz format
