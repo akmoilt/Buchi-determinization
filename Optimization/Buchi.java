@@ -60,25 +60,13 @@ class Buchi {
             map(s->s.transitions.keySet())
             .collect(HashSet<Character>::new, Set::addAll, Set::addAll); // Takes the union of the sets
     }
-    
-    /**
-     * Optimizes this automata, cleaning up irrelevant states.
-     */
-    public void cleanup(){
-    	// TODO find SCC's
-    	
-    	// TODO go over SCC's in reverse topological order,
-    	// deleting if possible.
-    	
-    	// TODO update states and transitions
-    }
 
     /**
      * Reads NBA in graphviz format from stdin, prints the resulting DNA, again in graphviz format
      */
     public static void main(String[] args) {
     	Buchi buchiIn = new Buchi(System.in);
-    	DeterminizationTree tree = new DeterminizationTree(buchiIn);
+    	DeterminizationTree tree = new DeterminizationTree(buchiIn, buchiIn.states.size());
     	Numbered numberedOut = new Numbered(tree);
     	System.out.println(numberedOut);
     }

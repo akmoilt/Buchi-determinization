@@ -13,13 +13,19 @@ public class DeterminizationTree {
 	private int number;
 	private Map<String, Integer> lastUpdated;
 	private int currentIteration;
+	private int cutoffDepth;
 	
 	/**
 	 * Constructor for Tree.
+	 * 
+	 * ***NOTE*** Is only mathematicaly correct for:
+	 * 	cutoffDepth == buchi.states.length();
+	 * 
 	 * @param buchi - the NBA to be determinized
 	 */
-	public DeterminizationTree(Buchi buchi){
-        this.buchi = buchi;
+	public DeterminizationTree(Buchi buchi, int cutoffDepth){
+        this.cutoffDepth = cutoffDepth;
+		this.buchi = buchi;
 		this.currentIteration = 0;
 		this.nodelist = new LinkedList<TreeNode>();
 		this.lastUpdated = new HashMap<>();
@@ -98,11 +104,13 @@ public class DeterminizationTree {
 				this.number = (number < newNumber ? number : newNumber);
 			}
 		} else {
-			if(!accStates.isEmpty()){
+			if(!accStates.isEmpty() && this.nodelist.size() < this.cutoffDepth){
 				// Add new child with all states that accepted:
 				TreeNode newChild = new TreeNode(accStates, t);
 				t.children.add(newChild);
 				this.nodelist.add(newChild);
+			} else {
+				t.states.putAll(accStates);
 			}
 		}
         return true;
@@ -170,7 +178,7 @@ public class DeterminizationTree {
 	}
 	
 	private DeterminizationTree deepCopy(){
-		DeterminizationTree toRet = new DeterminizationTree(this.buchi);
+		DeterminizationTree toRet = new DeterminizationTree(this.buchi, this.cutoffDepth);
         toRet.buchi = this.buchi; // TODO Is buchi ever changed? Does it need to be deep copied as well?
 		toRet.currentIteration = this.currentIteration;
 		toRet.lastUpdated = new HashMap<>();
