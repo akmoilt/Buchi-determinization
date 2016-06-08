@@ -121,6 +121,7 @@ public class DeterminizationTree {
 	// returns all states in this subtree
 	private Map<String, BuchiState> getSubtreeStatesAndDelete(TreeNode node){
 		Map<String, BuchiState> toRet = node.states;
+		toRet.putAll(node.acceptedstates);
 		TreeNode child;
 		ListIterator<TreeNode> iter = node.children.listIterator();
 		while(iter.hasNext()){
@@ -162,7 +163,7 @@ public class DeterminizationTree {
             int index = 0;
             boolean wasFound = false;
             for (TreeNode node : nodelist) {
-                if (node.states.containsKey(id)) {
+                if (node.states.containsKey(id) || node.acceptedstates.containsKey(id)) {
                     toRet += index + " ";
                     wasFound = true;
                     break;
