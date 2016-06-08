@@ -45,7 +45,7 @@ public class DeterminizationTree {
 	 * @param s - the input char
 	 * @return The new tree after the step
 	 */
-	public DeterminizationTree doStep(char s){
+	public DeterminizationTree doStep(char s, boolean makeChildren){
 		this.currentIteration++;
 		DeterminizationTree toRet = this.deepCopy();
 		if(toRet.nodelist.isEmpty()) {
@@ -53,17 +53,17 @@ public class DeterminizationTree {
             return toRet;
         }
         toRet.number = nodelist.size()*2;
-		toRet.doRecursiveStep(s, toRet.nodelist.iterator().next());
+		toRet.doRecursiveStep(s, toRet.nodelist.iterator().next(), makeChildren);
 		return toRet;
 	}
 	//implementation of doStep:
-	private boolean doRecursiveStep(char s, TreeNode t){
+	private boolean doRecursiveStep(char s, TreeNode t, boolean makeChildren){
 		//do recursivly on children:
 		if(!t.children.isEmpty()){
 			ListIterator<TreeNode> iter = t.children.listIterator();
 			while(iter.hasNext()){
 				TreeNode next = iter.next();
-				if(doRecursiveStep(s, next) == false){
+				if(doRecursiveStep(s, next, makeChildren) == false){
 					int newNumber = 2*this.nodelist.indexOf(next); // return false
 					this.number = (number < newNumber ? number : newNumber);
 					this.nodelist.remove(next);
@@ -106,7 +106,8 @@ public class DeterminizationTree {
 				t.acceptedstates = new HashMap<>();
 			}
 		} else {
-			if(!t.acceptedstates.isEmpty() && this.nodelist.size() < this.cutoffDepth){
+			if(!t.acceptedstates.isEmpty() && this.nodelist.size() < this.cutoffDepth
+					&& makeChildren){
 				// Add new child with all states that accepted:
 				TreeNode newChild = new TreeNode(t.acceptedstates, t);
 				t.children.add(newChild);
