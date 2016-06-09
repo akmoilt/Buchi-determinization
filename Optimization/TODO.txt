@@ -1,0 +1,9 @@
+TODO:
+
+*) Choose what optimizations to do.
+*) Talk with GUI guys about non-emptiness.
+*) Do optimizations.
+
+Ideas for optimization:
+*) Clean up NBA (look at SCC's and stuff)
+*) ??
