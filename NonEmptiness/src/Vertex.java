@@ -25,8 +25,8 @@ class Vertex
     /**
      * Adds a new outgoing edge.
      */
-    public Edge addEdge(String to, int number) {
-        Edge newEdge = new Edge(this.id, to, number);
+    public Edge addEdge(String to, int number, Character transition) {
+        Edge newEdge = new Edge(this.id, to, number, transition);
         edges.add(newEdge);
         return newEdge;
     }

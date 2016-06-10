@@ -78,7 +78,7 @@ class Condenser
         vertices.keySet().stream().forEach(id -> transpose.addVert(new Vertex(id)));
         for (Vertex vertex : vertices.values()) {
             for (Edge edge : vertex.edges) {
-                transpose.getVert(edge.to).addEdge(edge.from, edge.number);
+                transpose.getVert(edge.to).addEdge(edge.from, edge.number, edge.transition);
             }
         }
         return transpose;
@@ -100,11 +100,11 @@ class Condenser
                 for (Edge edge : vertex.edges) {
                     if (components.roots.get(getVert(edge.to).id).equals(root.id)) {
                         // Edge inside the component
-                        newVert.addEdge(root.id + "." + edge.to, edge.number);
+                        newVert.addEdge(root.id + "." + edge.to, edge.number, edge.transition);
                     }
                     else {
                         // Edge goes to vertex outside component
-                        newRoot.addEdge(components.roots.get(edge.to), edge.number);
+                        newRoot.addEdge(components.roots.get(edge.to), edge.number, edge.transition);
                     }
                 }
                 newRoot.contraction.addVert(newVert);
@@ -142,7 +142,7 @@ class Condenser
                     String from = roots.getOrDefault(edge.from, edge.from);
                     String to = roots.getOrDefault(edge.to, edge.to);
                     if (!to.equals(from)) {
-                        ret.vertices.getOrDefault(from, new Vertex(from)).addEdge(to, edge.number);
+                        ret.vertices.getOrDefault(from, new Vertex(from)).addEdge(to, edge.number, edge.transition);
                         if (!ret.vertices.containsKey(to)) {
                             ret.vertices.put(to, new Vertex(to));
                         }
@@ -168,7 +168,7 @@ class Condenser
             for (Edge edge : vertex.edges) {
                 // Filter out edges
                 if (filter.filter(edge)) {
-                    newVert.addEdge(edge.to, edge.number);
+                    newVert.addEdge(edge.to, edge.number, edge.transition);
                     // We also want to keep any vertices with incoming edges
                     vertsToKeep.add(edge.to);
                 }

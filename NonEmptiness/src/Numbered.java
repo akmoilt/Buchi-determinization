@@ -33,7 +33,8 @@ class Numbered {
                     NumberedState state = states.get(transitionMatcher.group("startID"));
                     Character nextChar = transitionMatcher.group("character").charAt(0);
                     state.transitions.put(nextChar, new NumberedTransition(transitionMatcher.group("nextID"),
-                                Integer.parseInt(transitionMatcher.group("number"))));
+                                Integer.parseInt(transitionMatcher.group("number")),
+                            transitionMatcher.group("character").charAt(0)));
                 }
                 else {
                     System.out.println("Invalid input format:");
