@@ -33,9 +33,12 @@ public class NumberedAnalyzer {
         }
         else {
             // First find the finite prefix of the word -- the path from the first state to the witness
-            Deque<Edge> prefixPath = findPath(witness.component, witness.edge.to, witness.edge.from);
+            // find the actual id of the beginning of witness (ew)
+            String[] witnessHier = witness.edge.from.split("\\.");
+            String realId = witnessHier[witnessHier.length - 1];
+            Deque<Edge> prefixPath = findPath(numberedGraph, "Q0", realId);
             // Next find a cycle containing our witness
-            Deque<Edge> suffixPath = findPath(numberedGraph, "Q0", witness.edge.from);
+            Deque<Edge> suffixPath = findPath(witness.component, witness.edge.to, witness.edge.from);
             // Convert these to words
             String prefix = "";
             for (Edge edge : prefixPath) {
@@ -45,7 +48,7 @@ public class NumberedAnalyzer {
             for (Edge edge : suffixPath) {
                 suffix += edge.transition;
             }
-            String word = prefix + "(" + witness.edge.transition + suffixPath + ")*";
+            String word = prefix + "(" + witness.edge.transition + suffix + ")*";
             return "NonEmpty:\n" + word;
         }
     }
@@ -78,7 +81,7 @@ public class NumberedAnalyzer {
         // Now we use parents to reconstruct the path
         Deque<Edge> path = new ArrayDeque<>();
         String curr = to;
-        while (curr != from) {
+        while (!curr.equals(from)) {
             Edge parentEdge = parents.get(curr);
             path.addFirst(parentEdge);
             curr = parentEdge.from;
