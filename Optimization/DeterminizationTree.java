@@ -37,7 +37,7 @@ public class DeterminizationTree {
 				initialStates.put(s.id, s);
 			}
 		}
-		nodelist.add(new TreeNode(initialStates, null));
+		nodelist.add(new TreeNode(initialStates, new HashMap<>(), null));
 	}
 	
 	/**
@@ -109,7 +109,7 @@ public class DeterminizationTree {
 			if(!t.acceptedstates.isEmpty() && this.nodelist.size() < this.cutoffDepth
 					&& makeChildren){
 				// Add new child with all states that accepted:
-				TreeNode newChild = new TreeNode(t.acceptedstates, t);
+				TreeNode newChild = new TreeNode(t.acceptedstates, new HashMap<>(), t);
 				t.children.add(newChild);
 				this.nodelist.add(newChild);
 				t.acceptedstates = new HashMap<>();
@@ -199,15 +199,15 @@ public class DeterminizationTree {
 		public List<TreeNode> children;
 		public TreeNode parent;
 		
-		public TreeNode(Map<String, BuchiState> states, TreeNode parent){
+		public TreeNode(Map<String, BuchiState> states, Map<String, BuchiState> acceptedStates, TreeNode parent){
 			this.states = states;
-			this.acceptedstates = new HashMap<>();
+			this.acceptedstates = acceptedStates;
 			this.parent = parent;
 			this.children = new LinkedList<>();
 		}
 		
 		public TreeNode copyIntoList(TreeNode parent, List<TreeNode> nodelist){
-			TreeNode toRet = new TreeNode(this.states, parent);
+			TreeNode toRet = new TreeNode(this.states, this.acceptedstates, parent);
 			nodelist.add(toRet);
 			for(TreeNode child : this.children){
 				toRet.children.add(child.copyIntoList(toRet, nodelist));
