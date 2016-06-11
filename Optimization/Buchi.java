@@ -66,7 +66,7 @@ class Buchi {
      */
     public static void main(String[] args) {
     	Buchi buchiIn = new Buchi(System.in);
-    	DeterminizationTree tree = new DeterminizationTree(buchiIn, buchiIn.states.size());
+    	DeterminizationTree tree = new DeterminizationTree(buchiIn, 2*buchiIn.states.size());
     	Numbered numberedOut = new Numbered(tree);
     	System.out.println(numberedOut);
     }
