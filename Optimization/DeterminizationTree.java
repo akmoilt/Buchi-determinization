@@ -107,9 +107,9 @@ public class DeterminizationTree {
         }
 
         t.states = otherStates;
-        t.acceptedstates.putAll(accStates);
-		if(t.acceptedstates.isEmpty()){
-			if(t.states.isEmpty() && t.children.isEmpty()){
+        t.acceptedstates = accStates;
+		if(t.states.isEmpty()){
+			if(t.acceptedstates.isEmpty() && t.children.isEmpty()){
 				return false; //kill this node
 			} else {
 				// reached accepting state:
@@ -117,19 +117,15 @@ public class DeterminizationTree {
 				t.states.putAll(t.acceptedstates);
 				int newNumber = 2*this.nodelist.indexOf(t)+1; // return true
 				this.number = (number < newNumber ? number : newNumber);
-				t.acceptedstates = new HashMap<>();
+				t.acceptedstates = new LinkedHashMap<>();
 			}
-		} else {
-			if(!t.acceptedstates.isEmpty() && this.nodelist.size() < this.cutoffDepth
+		} else if(!t.acceptedstates.isEmpty() && this.nodelist.size() < this.cutoffDepth
 					&& makeChildren){
-				// Add new child with all states that accepted:
-				TreeNode newChild = new TreeNode(t.acceptedstates, new HashMap<>(), t);
-				t.children.add(newChild);
-				this.nodelist.add(newChild);
-				t.acceptedstates = new HashMap<>();
-			} else {
-				t.acceptedstates.putAll(accStates);
-			}
+			// Add new child with all states that accepted:
+			TreeNode newChild = new TreeNode(t.acceptedstates, new HashMap<>(), t);
+			t.children.add(newChild);
+			this.nodelist.add(newChild);
+			t.acceptedstates = new HashMap<>();
 		}
         return true;
 	}
@@ -137,7 +133,6 @@ public class DeterminizationTree {
 	private Map<String, BuchiState> getSubtreeStatesAndDelete(TreeNode node){
 		Map<String, BuchiState> toRet = node.states;
 		toRet.putAll(node.acceptedstates);
-		TreeNode child;
 		ListIterator<TreeNode> iter = node.children.listIterator();
 		while(iter.hasNext()){
 			// remove all children:
