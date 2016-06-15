@@ -14,6 +14,7 @@ public class DeterminizationTree {
 	private Map<String, Integer> lastUpdated;
 	private int currentIteration;
 	private int cutoffDepth;
+    private int counterLength;
 	
 	/**
 	 * Constructor for Tree.
@@ -23,12 +24,13 @@ public class DeterminizationTree {
 	 * 
 	 * @param buchi - the NBA to be determinized
 	 */
-	public DeterminizationTree(Buchi buchi, int cutoffDepth){
+	public DeterminizationTree(Buchi buchi, int cutoffDepth, int counterLength){
         this.cutoffDepth = cutoffDepth;
 		this.buchi = buchi;
 		this.currentIteration = 0;
 		this.nodelist = new LinkedList<TreeNode>();
 		this.lastUpdated = new HashMap<>();
+        this.counterLength = counterLength;
 		Map<String, BuchiState> initialStates = new HashMap<>();
 		for(Map.Entry<String, BuchiState> stateEntry : buchi.states.entrySet()) {
             BuchiState s = stateEntry.getValue();
@@ -37,7 +39,7 @@ public class DeterminizationTree {
 				initialStates.put(s.id, s);
 			}
 		}
-		nodelist.add(new TreeNode(initialStates, new HashMap<>(), null));
+		nodelist.add(new TreeNode(initialStates, new HashMap<>(), null, 1));
 	}
 	
 	/**
@@ -122,7 +124,7 @@ public class DeterminizationTree {
 		} else if(!t.acceptedstates.isEmpty() && this.nodelist.size() < this.cutoffDepth
 					&& makeChildren){
 			// Add new child with all states that accepted:
-			TreeNode newChild = new TreeNode(t.acceptedstates, new HashMap<>(), t);
+			TreeNode newChild = new TreeNode(t.acceptedstates, new HashMap<>(), t, t.counter*2);
 			t.children.add(newChild);
 			this.nodelist.add(newChild);
 			t.acceptedstates = new HashMap<>();
@@ -192,7 +194,7 @@ public class DeterminizationTree {
 	}
 	
 	private DeterminizationTree deepCopy(){
-		DeterminizationTree toRet = new DeterminizationTree(this.buchi, this.cutoffDepth);
+		DeterminizationTree toRet = new DeterminizationTree(this.buchi, this.cutoffDepth, this.counterLength);
         toRet.buchi = this.buchi; // TODO Is buchi ever changed? Does it need to be deep copied as well?
 		toRet.currentIteration = this.currentIteration;
 		toRet.lastUpdated = new HashMap<>();
@@ -207,16 +209,18 @@ public class DeterminizationTree {
 		public Map<String,BuchiState> acceptedstates;
 		public List<TreeNode> children;
 		public TreeNode parent;
+        public int counter;
 		
-		public TreeNode(Map<String, BuchiState> states, Map<String, BuchiState> acceptedStates, TreeNode parent){
+		public TreeNode(Map<String, BuchiState> states, Map<String, BuchiState> acceptedStates, TreeNode parent, int counter){
 			this.states = states;
 			this.acceptedstates = acceptedStates;
 			this.parent = parent;
 			this.children = new LinkedList<>();
+            this.counter = counter;
 		}
 		
 		public TreeNode copyIntoList(TreeNode parent, List<TreeNode> nodelist){
-			TreeNode toRet = new TreeNode(this.states, this.acceptedstates, parent);
+			TreeNode toRet = new TreeNode(this.states, this.acceptedstates, parent, this.counter);
 			nodelist.add(toRet);
 			for(TreeNode child : this.children){
 				toRet.children.add(child.copyIntoList(toRet, nodelist));

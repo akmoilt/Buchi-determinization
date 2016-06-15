@@ -66,7 +66,15 @@ class Buchi {
      */
     public static void main(String[] args) {
     	Buchi buchiIn = new Buchi(System.in);
-    	DeterminizationTree tree = new DeterminizationTree(buchiIn, 2*buchiIn.states.size());
+        int cutoffDepth = 2*buchiIn.states.size();
+        if (args.length >= 2) {
+            cutoffDepth = Integer.parseInt(args[1]);
+        }
+        int counterLength = 0;
+        if (args.length >= 3) {
+            counterLength = Integer.parseInt(args[2]);
+        }
+    	DeterminizationTree tree = new DeterminizationTree(buchiIn, cutoffDepth, counterLength);
     	Numbered numberedOut = new Numbered(tree);
     	System.out.println(numberedOut);
     }
