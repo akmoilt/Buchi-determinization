@@ -70,7 +70,7 @@ class Buchi {
         if (args.length >= 2) {
             cutoffDepth = Integer.parseInt(args[1]);
         }
-        int counterLength = 0;
+        int counterLength = 1;
         if (args.length >= 3) {
             counterLength = Integer.parseInt(args[2]);
         }

@@ -15,6 +15,7 @@ public class DeterminizationTree {
 	private int currentIteration;
 	private int cutoffDepth;
     private int counterLength;
+    private int counter;
 	
 	/**
 	 * Constructor for Tree.
@@ -31,6 +32,7 @@ public class DeterminizationTree {
 		this.nodelist = new LinkedList<TreeNode>();
 		this.lastUpdated = new HashMap<>();
         this.counterLength = counterLength;
+        this.counter = counterLength - 1;
 		Map<String, BuchiState> initialStates = new HashMap<>();
 		for(Map.Entry<String, BuchiState> stateEntry : buchi.states.entrySet()) {
             BuchiState s = stateEntry.getValue();
@@ -47,7 +49,7 @@ public class DeterminizationTree {
 	 * @param s - the input char
 	 * @return The new tree after the step
 	 */
-	public DeterminizationTree doStep(char s, boolean makeChildren){
+	public DeterminizationTree doStep(char s){
 		this.currentIteration++;
 		DeterminizationTree toRet = this.deepCopy();
 		if(toRet.nodelist.isEmpty()) {
@@ -55,7 +57,13 @@ public class DeterminizationTree {
             return toRet;
         }
         toRet.number = nodelist.size()*2;
-		toRet.doRecursiveStep(s, toRet.nodelist.iterator().next(), makeChildren);
+        toRet.counter--;
+        if(toRet.counter < 0){
+        	toRet.doRecursiveStep(s, toRet.nodelist.iterator().next(), true);
+        	toRet.counter = toRet.counterLength - 1;
+        } else {
+        	toRet.doRecursiveStep(s, toRet.nodelist.iterator().next(), false);
+        }
 		return toRet;
 	}
 	//implementation of doStep:
@@ -151,6 +159,13 @@ public class DeterminizationTree {
 	 */
 	public int getNumber(){
 		return this.number;
+	}
+	
+	/**
+	 * Returns this Tree's counter
+	 */
+	public int getCounter(){
+		return this.counter;
 	}
 
 	/**

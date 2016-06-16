@@ -22,7 +22,7 @@ class Numbered {
     		NumberedState state = new NumberedState(getStateID(curr), isInitial);
     		if(!this.states.containsKey(state.id)){
     			for(char s : curr.getAlphabet()){
-        			DeterminizationTree newT = curr.doStep(s, true);
+        			DeterminizationTree newT = curr.doStep(s);
         			state.transitions.put(s,
         					new NumberedTransition(getStateID(newT), newT.getNumber()));
         			q.add(newT);
@@ -56,6 +56,8 @@ class Numbered {
     	String id = Arrays.toString(t.getTreeArray()).replace(",", "");
     	id += ",";
     	id += t.getStateMappingString();
+    	id += ",";
+    	id += Integer.toString(t.getCounter());
         return id;
     }
 
